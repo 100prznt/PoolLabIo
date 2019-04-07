@@ -1,2 +1,6 @@
 # PoolLabIo
-C# helper library to communicate with the PoolLab® - Photometer
+C# Bibliothek zur Bluetooth-Kommunikation mit dem PoolLab® - Photometer.
+
+
+### Markennamen
+PoolLab® ist eine eingetragene Marke der Water-i.d. GmbH
