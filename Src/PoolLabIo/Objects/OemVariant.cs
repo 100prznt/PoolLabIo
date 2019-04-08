@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Rca.PoolLabIo.Objects
+﻿namespace Rca.PoolLabIo.Objects
 {
     /// <summary>
     /// Available OEM variants of PoolLab

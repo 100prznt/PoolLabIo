@@ -58,15 +58,16 @@ namespace Rca.PoolLabIo.Objects
                 return m_RawBatteryLevel;
             }
         }
+
         #endregion Properties
 
         #region Members
-
         ushort m_RawFwVersion; // 2 byte
         ushort m_RawResultCode; // 2 byte
         uint m_RawDeviceTime; // 8 byte
         byte[] m_RawMac; // 6 byte
         ushort m_RawBatteryLevel; //2 byte
+
         #endregion Members
 
         #region Services
@@ -87,6 +88,7 @@ namespace Rca.PoolLabIo.Objects
                 return result;
             }
         }
+
         #endregion Services
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Rca.PoolLabIo.Objects
+namespace Rca.PoolLabIo.Objects.Extensions
 {
     [AttributeUsage(AttributeTargets.Field)]
     public class MeasurementTypeAttribute : Attribute

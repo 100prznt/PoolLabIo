@@ -123,11 +123,12 @@
     <Compile Include="BleAdapter.cs" />
     <Compile Include="Helpers\UnixTimeConverter.cs" />
     <Compile Include="Objects\CommandType.cs" />
+    <Compile Include="Objects\ResultCode.cs" />
     <Compile Include="Objects\PoolLabInformation.cs" />
     <Compile Include="Objects\Measurement.cs" />
     <Compile Include="Objects\MeasurementStatus.cs" />
     <Compile Include="Objects\MeasurementType.cs" />
-    <Compile Include="Objects\MeasurementTypeAttribute.cs" />
+    <Compile Include="Objects\Extensions\MeasurementTypeAttribute.cs" />
     <Compile Include="Objects\OemVariant.cs" />
     <Compile Include="PoolLab.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

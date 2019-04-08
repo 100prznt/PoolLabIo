@@ -17,6 +17,9 @@ using Windows.Storage.Streams;
 
 namespace Rca.PoolLabIo
 {
+    /// <summary>
+    /// Communication class fpr the PoolLab photometer
+    /// </summary>
     public static class PoolLab
     {
         #region Constants
@@ -24,11 +27,30 @@ namespace Rca.PoolLabIo
         /// The first byte of every data-block
         /// </summary>
         public const byte PREAMBLE = 0xAB;
+
+        /// <summary>
+        /// BLE UUIDS of the PoolLab Bluetooth API
+        /// </summary>
         public struct Uuids
         {
+            /// <summary>
+            /// BLE PoolLab communictation service
+            /// </summary>
             public static Guid PoolLabSvc = new Guid("A7EE04A9-507B-4910-A528-B619D5501924");
+
+            /// <summary>
+            /// BLE characteristic for sending commands to the PoolLab device
+            /// </summary>
             public static Guid CmdMosi = new Guid("91BFA536-3036-4901-8813-3635FCED7B90");
+
+            /// <summary>
+            /// BLE characteristic for reading commands from the PoolLab device
+            /// </summary>
             public static Guid CmdMiso = new Guid("2FF18B59-195D-4EE1-B78C-0CBDE3EFF9C2");
+
+            /// <summary>
+            /// BLE characteristic for receiving notifications from the PoolLab device
+            /// </summary>
             public static Guid MisoSig = new Guid("C2296C06-C7E0-4657-B42E-C8330826454C");
         }
 
@@ -123,28 +145,43 @@ namespace Rca.PoolLabIo
         }
 
         #region Commands
-        [Obsolete("Rework -> use common write/read")]
-        public static async void Restart()
+        /// <summary>
+        /// Get information about the device
+        /// </summary>
+        public static async void GetInfo()
         {
-            var cmd = new byte[] { PREAMBLE, 0x03 };
+            await RegisterNotification(ReadPoolLabInformation);
 
-            Debug.WriteLine("Sending: " + BitConverter.ToString(cmd));
-
-            var res = await CmdMosi.WriteValueWithResultAsync(cmd.AsBuffer());
-
-            Debug.WriteLine("Restart Result: " + res.Status.ToString());
+            SendCommand(PREAMBLE, (byte)CommandType.PCMD_API_GET_INFO);
         }
 
-        [Obsolete("Rework -> use common write/read")]
-        public static async void ShutDown()
+        /// <summary>
+        /// Set the PoolLab´s date/time
+        /// </summary>
+        public static async void SetTime()
         {
-            var cmd = new byte[] { PREAMBLE, 0x04 };
+            await RegisterNotification(ReadResult);
 
-            Debug.WriteLine("Sending: " + BitConverter.ToString(cmd));
-            
-            var res = await CmdMosi.WriteValueWithResultAsync(cmd.AsBuffer());
+            var cmdBytes = new List<byte> { PREAMBLE, (byte)CommandType.PCMD_API_SET_TIME, 0x00 };
+            cmdBytes.AddRange(BitConverter.GetBytes(DateTime.Now.ToUnixTime()));
 
-            Debug.WriteLine("Restart Result: " + res.Status.ToString());
+            SendCommand(cmdBytes.ToArray());
+        }
+
+        /// <summary>
+        /// Immediately restarts the PoolLab (BLE connection will fail)
+        /// </summary>
+        public static void Restart()
+        {
+            SendCommand(PREAMBLE, (byte)CommandType.PCMD_API_RESET_DEVICE);
+        }
+
+        /// <summary>
+        /// Set the device into sleep-mode/standby
+        /// </summary>
+        public static void ShutDown()
+        {
+            SendCommand(PREAMBLE, (byte)CommandType.PCMD_API_SLEEP_DEVICE);
         }
 
         /// <summary>
@@ -155,27 +192,17 @@ namespace Rca.PoolLabIo
             //TODO: Gestaffelte Abarbeitung bei mehreren Daten
             await RegisterNotification(ReadMeasurements);
 
-            SendCommand(PREAMBLE, 0x05);
+            SendCommand(PREAMBLE, (byte)CommandType.PCMD_API_GET_MEASURES);
         }
 
-        [Obsolete("Rework -> use common write/read")]
-        public static async void SetTime()
+        /// <summary>
+        /// Delete all saved measurements from the PoolLab
+        /// </summary>
+        public static async void ResetMeasurements()
         {
-            await RegisterNotification();
+            await RegisterNotification(ReadResult);
 
-            //Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-
-            var cmdBytes = new List<byte> { PREAMBLE, 0x02, 0x00 };
-
-            cmdBytes.AddRange(BitConverter.GetBytes(DateTime.Now.ToUnixTime()));
-
-            var cmd = cmdBytes.ToArray();
-
-            Debug.WriteLine("Sending: " + BitConverter.ToString(cmd));
-
-            var res = await CmdMosi.WriteValueWithResultAsync(cmd.AsBuffer());
-
-            Debug.WriteLine("Set Time Result: " + res.Status.ToString());
+            SendCommand(PREAMBLE, (byte)CommandType.PCMD_API_RESET_MEASURES);
         }
 
         #endregion Commands
@@ -211,11 +238,41 @@ namespace Rca.PoolLabIo
                 return null;
             }
         }
+
         #endregion Write/Read
 
         #endregion Services
 
         #region Internal services
+        private static async void ReadResult(GattCharacteristic sender, GattValueChangedEventArgs args)
+        {
+            MisoSig.ValueChanged -= ReadResult;
+
+            var buffer = await ReadCmdMiso();
+
+            if (buffer != null && buffer.Length > 0)
+            {
+                using (var reader = new BinaryReader(new MemoryStream(buffer)))
+                {
+                    var preamble = reader.ReadByte();
+
+                    if (preamble != PREAMBLE)
+                    {
+                        Debug.WriteLine("invalide result data");
+                    }
+                    else
+                    {
+                        var res = (ResultCode)reader.ReadByte();
+                        //TODO: Ergebnis verarbeiten...
+                    }
+                }
+            }
+            else
+            {
+                //TODO: No data...
+            }
+        }
+
         private static async void ReadMeasurements(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
             MisoSig.ValueChanged -= ReadMeasurements;
@@ -241,8 +298,27 @@ namespace Rca.PoolLabIo
                     }
                 }
             }
+            else
+            {
+                //TODO: No data...
+            }
         }
 
+        private static async void ReadPoolLabInformation(GattCharacteristic sender, GattValueChangedEventArgs args)
+        {
+            MisoSig.ValueChanged -= ReadPoolLabInformation;
+
+            var buffer = await ReadCmdMiso();
+
+            if (buffer != null && buffer.Length > 0)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                //TODO: No data...
+            }
+        }
 
         private static async void MisoSig_ValueChangedAsync(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
@@ -271,10 +347,7 @@ namespace Rca.PoolLabIo
 
             Debug.WriteLine("WriteResult: " + response.Status);
         }
-
-
-        //public delegate void CommandMISOReceiverHandler(GattCharacteristic sender, GattValueChangedEventArgs args);
-
+        
         private static async Task RegisterNotification(TypedEventHandler<GattCharacteristic, GattValueChangedEventArgs> receiver = null)
         {
             //MisoSig.ValueChanged -= MisoSig_ValueChangedAsync;
@@ -315,23 +388,6 @@ namespace Rca.PoolLabIo
             }
         }
 
-
-        [Obsolete]
-        public static async Task<byte[]> ReadCmdMisoOld()
-        {
-            GattReadResult result = await CmdMiso.ReadValueAsync(BluetoothCacheMode.Uncached);
-            if (result.Status == GattCommunicationStatus.Success)
-            {
-                var reader = DataReader.FromBuffer(result.Value);
-                byte[] data = new byte[reader.UnconsumedBufferLength];
-                reader.ReadBytes(data);
-                Debug.WriteLine("Manual reading");
-                Debug.WriteLine("CommandMISO value: " + BitConverter.ToString(data));
-                return data;
-            }
-
-            return null;
-        }
         #endregion Internal services
     }
 }

@@ -58,13 +58,14 @@ namespace Rca.PoolLabIo.Objects
                 return Convert.ToDouble(m_RawValue);
             }
         }
+
         #endregion Properties
 
         #region Members
-
         ushort m_RawId; // 2 byte
-        uint m_RawTimestamp; // 4 byte
+        uint m_RawTimestamp; // 8 byte
         float m_RawValue; //4 byte
+
         #endregion Members
 
         #region Services
@@ -84,6 +85,7 @@ namespace Rca.PoolLabIo.Objects
                 return result;
             }
         }
+
         #endregion Services
     }
 }
