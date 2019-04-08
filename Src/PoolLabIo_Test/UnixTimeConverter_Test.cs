@@ -1,20 +1,18 @@
 ﻿
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PlCon;
+using Rca.PoolLabIo.Helpers;
 
-namespace PoolLabIo_Test
+namespace Rca.PoolLabIo_Test
 {
     [TestClass]
     public class UnixTimeConverter_Test
     {
         [TestMethod]
-        public void Test1()
+        public void Convert()
         {
             var currentDateTime = DateTime.Now;
-
             var unixTimeStamp = currentDateTime.ToUnixTime();
-
             var backConvertedUnixTimeStamp = UnixTimeConverter.UnixTimeToDateTime(unixTimeStamp);
 
             Assert.AreEqual(currentDateTime.DayOfYear, backConvertedUnixTimeStamp.DayOfYear, 0, "DayOfYear");

@@ -7,7 +7,7 @@
     <ProjectGuid>{B6A4C8DE-F291-4A48-85C2-2EBEB0102302}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PoolLabIo_Test</RootNamespace>
+    <RootNamespace>Rca.PoolLabIo_Test</RootNamespace>
     <AssemblyName>PoolLabIo_Test</AssemblyName>
     <DefaultLanguage>de-DE</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
@@ -159,9 +159,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PlCon\PlCon.csproj">
-      <Project>{d6e8fa8b-4369-485c-99dd-75f97ec3e2fa}</Project>
-      <Name>PlCon</Name>
+    <ProjectReference Include="..\PoolLabIo\PoolLabIo.csproj">
+      <Project>{2fe0fb79-124b-4129-8bec-dcf65ccb3900}</Project>
+      <Name>PoolLabIo</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

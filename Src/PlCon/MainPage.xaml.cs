@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rca.PoolLabIo;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -30,7 +31,7 @@ namespace PlCon
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        Adapter m_Adapter;
+        BleAdapter m_Adapter;
 
         public MainPage()
         {
@@ -39,7 +40,7 @@ namespace PlCon
 
         private void Btn_Start_Click(object sender, RoutedEventArgs e)
         {
-            m_Adapter = new Adapter();
+            m_Adapter = new BleAdapter();
 
             m_Adapter.StartWatcher();
             m_Adapter.DeviceAddedEvent += Adapter_DeviceAddedEvent;
@@ -49,14 +50,12 @@ namespace PlCon
 
         private async void Adapter_DeviceAddedEvent(DeviceInformation devInfo)
         {
-            if (PoolLabIo.IsPoolLabServiceDevice(devInfo))
+            if (PoolLab.IsPoolLabServiceDevice(devInfo))
             {
                 m_Adapter.StopWatcher();
                 Debug.WriteLine("Connect PoolLab");
 
-                await PoolLabIo.Connect(devInfo.Id);
-
-
+                await PoolLab.Connect(devInfo.Id);
 
 
                 //await Task.Delay(TimeSpan.FromSeconds(2));
@@ -77,13 +76,13 @@ namespace PlCon
         {
             Debug.WriteLine("ENUM END");
 
-            if (PoolLabIo.IsConnected == false)
+            if (PoolLab.IsConnected == false)
                 Debug.WriteLine("PoolLab not found!");
         }
 
         private async void Btn_Read_Click(object sender, RoutedEventArgs e)
         {
-            var res = await PoolLabIo.ReadCmdMiso();
+            var res = await PoolLab.ReadCmdMiso();
         }
 
         private async void Btn_Send_Click(object sender, RoutedEventArgs e)
@@ -97,27 +96,27 @@ namespace PlCon
                 writer.WriteByte(cmdByte);
             }
 
-            await PoolLabIo.SendCommand(writer.DetachBuffer());
+            await PoolLab.SendCommand(writer.DetachBuffer());
         }
 
         private void Btn_SetTime_Click(object sender, RoutedEventArgs e)
         {
-            PoolLabIo.SetTime();
+            PoolLab.SetTime();
         }
 
         private void Btn_Restart_Click(object sender, RoutedEventArgs e)
         {
-            PoolLabIo.Restart();
+            PoolLab.Restart();
         }
 
         private void Btn_ShutDown_Click(object sender, RoutedEventArgs e)
         {
-            PoolLabIo.ShutDown();
+            PoolLab.ShutDown();
         }
 
         private void Btn_GetMeas_Click(object sender, RoutedEventArgs e)
         {
-            PoolLabIo.GetMeasurements();
+            PoolLab.GetMeasurements();
         }
     }
 }

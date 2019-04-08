@@ -19,29 +19,40 @@ namespace Rca.PoolLabIo
 {
     public static class PoolLab
     {
+        #region Constants
+        /// <summary>
+        /// The first byte of every data-block
+        /// </summary>
+        public const byte PREAMBLE = 0xAB;
         public struct Uuids
         {
             public static Guid PoolLabSvc = new Guid("A7EE04A9-507B-4910-A528-B619D5501924");
-
             public static Guid CmdMosi = new Guid("91BFA536-3036-4901-8813-3635FCED7B90");
             public static Guid CmdMiso = new Guid("2FF18B59-195D-4EE1-B78C-0CBDE3EFF9C2");
             public static Guid MisoSig = new Guid("C2296C06-C7E0-4657-B42E-C8330826454C");
         }
 
-        public const byte PREAMBLE = 0xAB;
+        #endregion Constants
 
+        #region Properties
+        public static bool IsConnected { get; set; }
+
+        #endregion Properties
+
+        #region Fields
         static GattCharacteristic CmdMiso = null;
         static GattCharacteristic CmdMosi = null;
         static GattCharacteristic MisoSig = null;
 
         static BluetoothLEDevice deviceReference;
 
-        public static bool IsConnected { get; set; }
+        #endregion Fields
 
+        #region Services
         public static bool IsPoolLabServiceDevice(DeviceInformation devInfo)
         {
-            //TODO: Uuid struct verwenden
-            return devInfo.Id.ToLower().Contains("a7ee04a9-507b-4910-a528-b619d5501924");
+            //TODO: Uuid struct testen
+            return string.Equals(devInfo.Id, Uuids.PoolLabSvc.ToString(), StringComparison.OrdinalIgnoreCase);
         }
 
         public static async Task Connect(string deviceId)
@@ -111,6 +122,157 @@ namespace Rca.PoolLabIo
             }
         }
 
+        #region Commands
+        [Obsolete("Rework -> use common write/read")]
+        public static async void Restart()
+        {
+            var cmd = new byte[] { PREAMBLE, 0x03 };
+
+            Debug.WriteLine("Sending: " + BitConverter.ToString(cmd));
+
+            var res = await CmdMosi.WriteValueWithResultAsync(cmd.AsBuffer());
+
+            Debug.WriteLine("Restart Result: " + res.Status.ToString());
+        }
+
+        [Obsolete("Rework -> use common write/read")]
+        public static async void ShutDown()
+        {
+            var cmd = new byte[] { PREAMBLE, 0x04 };
+
+            Debug.WriteLine("Sending: " + BitConverter.ToString(cmd));
+            
+            var res = await CmdMosi.WriteValueWithResultAsync(cmd.AsBuffer());
+
+            Debug.WriteLine("Restart Result: " + res.Status.ToString());
+        }
+
+        /// <summary>
+        /// Get all measurements form PoolLab
+        /// </summary>
+        public static async void GetMeasurements()
+        {
+            //TODO: Gestaffelte Abarbeitung bei mehreren Daten
+            await RegisterNotification(ReadMeasurements);
+
+            SendCommand(PREAMBLE, 0x05);
+        }
+
+        [Obsolete("Rework -> use common write/read")]
+        public static async void SetTime()
+        {
+            await RegisterNotification();
+
+            //Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+
+            var cmdBytes = new List<byte> { PREAMBLE, 0x02, 0x00 };
+
+            cmdBytes.AddRange(BitConverter.GetBytes(DateTime.Now.ToUnixTime()));
+
+            var cmd = cmdBytes.ToArray();
+
+            Debug.WriteLine("Sending: " + BitConverter.ToString(cmd));
+
+            var res = await CmdMosi.WriteValueWithResultAsync(cmd.AsBuffer());
+
+            Debug.WriteLine("Set Time Result: " + res.Status.ToString());
+        }
+
+        #endregion Commands
+
+        #region Write/Read
+        public static async Task SendCommand(params byte[] cmd)
+        {
+            await SendRawCommand(CmdMosi, cmd);
+        }
+
+        public static async Task SendCommand(IBuffer buffer)
+        {
+            await RegisterNotification();
+
+            CryptographicBuffer.CopyToByteArray(buffer, out byte[] cmd);
+            await SendCommand(cmd);
+        }
+
+        public static async Task<byte[]> ReadCmdMiso()
+        {
+            var result = await CmdMiso.ReadValueAsync(BluetoothCacheMode.Uncached);
+            if (result.Status == GattCommunicationStatus.Success)
+            {
+                CryptographicBuffer.CopyToByteArray(result.Value, out byte[] data);
+
+                Debug.WriteLine("CommandMISO value: " + BitConverter.ToString(data));
+
+                return data;
+            }
+            else
+            {
+                Debug.WriteLine($"Error during read value from CommandMISO ({result.ProtocolError})");
+                return null;
+            }
+        }
+        #endregion Write/Read
+
+        #endregion Services
+
+        #region Internal services
+        private static async void ReadMeasurements(GattCharacteristic sender, GattValueChangedEventArgs args)
+        {
+            MisoSig.ValueChanged -= ReadMeasurements;
+
+            var buffer = await ReadCmdMiso();
+
+            if (buffer != null && buffer.Length > 0)
+            {
+                var measurements = new List<Measurement>();
+                using (var reader = new BinaryReader(new MemoryStream(buffer)))
+                {
+                    var preamble = reader.ReadByte();
+
+                    if (preamble != PREAMBLE)
+                    {
+                        Debug.WriteLine("invalide measurement data");
+                    }
+                    else
+                    {
+                        int d = (buffer.Length - 1) / 16;
+                        for (int i = 0; i < (buffer.Length - 1) / 16; i++)
+                            measurements.Add(Measurement.FromBuffer(reader.ReadBytes(16)));
+                    }
+                }
+            }
+        }
+
+
+        private static async void MisoSig_ValueChangedAsync(GattCharacteristic sender, GattValueChangedEventArgs args)
+        {
+            MisoSig.ValueChanged -= MisoSig_ValueChangedAsync;
+
+            GattReadResult result = await CmdMiso.ReadValueAsync(BluetoothCacheMode.Uncached);
+            CryptographicBuffer.CopyToByteArray(result.Value, out byte[] data);
+
+            Debug.WriteLine("MISO_Sig notification");
+            Debug.WriteLine("CommandMISO value: " + BitConverter.ToString(data));
+        }
+
+        private static async Task SendRawCommand(GattCharacteristic characteristic, byte[] cmd)
+        {
+            if (cmd.Length > 128)
+                throw new OverflowException("Maximal 128 byte");
+
+            if (cmd[0] != PREAMBLE)
+                throw new ArgumentException("Command must be start with 0xAB");
+
+            //await RegisterNotification();
+
+            Debug.WriteLine("Sending command: " + BitConverter.ToString(cmd));
+
+            var response = await characteristic.WriteValueWithResultAsync(cmd.AsBuffer());
+
+            Debug.WriteLine("WriteResult: " + response.Status);
+        }
+
+
         //public delegate void CommandMISOReceiverHandler(GattCharacteristic sender, GattValueChangedEventArgs args);
 
         private static async Task RegisterNotification(TypedEventHandler<GattCharacteristic, GattValueChangedEventArgs> receiver = null)
@@ -153,114 +315,6 @@ namespace Rca.PoolLabIo
             }
         }
 
-        
-
-        public static async Task SendCommand(params byte[] cmd)
-        {
-            await SendRawCommand(CmdMosi, cmd);
-        }
-
-        public static async Task SendCommand(IBuffer buffer)
-        {
-            await RegisterNotification();
-
-            CryptographicBuffer.CopyToByteArray(buffer, out byte[] cmd);
-            await SendCommand(cmd);
-        }
-
-        private static async Task SendRawCommand(GattCharacteristic characteristic, byte[] cmd)
-        {
-            if (cmd.Length > 128)
-                throw new OverflowException("Maximal 128 byte");
-
-            if (cmd[0] != 0xAB)
-                throw new ArgumentException("Command must be start with 0xAB");
-
-            //await RegisterNotification();
-
-            Debug.WriteLine("Sending command: " + BitConverter.ToString(cmd));
-            
-            var response = await characteristic.WriteValueWithResultAsync(cmd.AsBuffer());
-
-            Debug.WriteLine("WriteResult: " + response.Status);
-        }
-
-        public static async void Restart()
-        {
-            var cmd = new byte[] { 0xAB, 0x03 };
-
-            Debug.WriteLine("Sending: " + BitConverter.ToString(cmd));
-
-            var res = await CmdMosi.WriteValueWithResultAsync(cmd.AsBuffer());
-
-            Debug.WriteLine("Restart Result: " + res.Status.ToString());
-        }
-
-        public static async void ShutDown()
-        {
-            var cmd = new byte[] { 0xAB, 0x04 };
-
-            Debug.WriteLine("Sending: " + BitConverter.ToString(cmd));
-            
-            var res = await CmdMosi.WriteValueWithResultAsync(cmd.AsBuffer());
-
-            Debug.WriteLine("Restart Result: " + res.Status.ToString());
-        }
-
-        public static async void GetMeasurements()
-        {
-            await RegisterNotification(ReadMeasurements);
-
-            SendCommand(PREAMBLE, 0x05);
-        }
-
-        public static async void SetTime()
-        {
-            await RegisterNotification();
-
-            //Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-
-            var cmdBytes = new List<byte> { PREAMBLE, 0x02, 0x00 };
-
-            cmdBytes.AddRange(BitConverter.GetBytes(DateTime.Now.ToUnixTime()));
-
-            var cmd = cmdBytes.ToArray();
-
-            Debug.WriteLine("Sending: " + BitConverter.ToString(cmd));
-
-            var res = await CmdMosi.WriteValueWithResultAsync(cmd.AsBuffer());
-
-            Debug.WriteLine("Set Time Result: " + res.Status.ToString());
-        }
-
-        private static async void MisoSig_ValueChangedAsync(GattCharacteristic sender, GattValueChangedEventArgs args)
-        {
-            MisoSig.ValueChanged -= MisoSig_ValueChangedAsync;
-
-            GattReadResult result = await CmdMiso.ReadValueAsync(BluetoothCacheMode.Uncached);
-            CryptographicBuffer.CopyToByteArray(result.Value, out byte[] data);
-
-            Debug.WriteLine("MISO_Sig notification");
-            Debug.WriteLine("CommandMISO value: " + BitConverter.ToString(data));
-        }
-
-        public static async Task<byte[]> ReadCmdMiso()
-        {
-            var result = await CmdMiso.ReadValueAsync(BluetoothCacheMode.Uncached);
-            if (result.Status == GattCommunicationStatus.Success)
-            {
-                CryptographicBuffer.CopyToByteArray(result.Value, out byte[] data);
-
-                Debug.WriteLine("CommandMISO value: " + BitConverter.ToString(data));
-
-                return data;
-            }
-            else
-            {
-                Debug.WriteLine($"Error during read value from CommandMISO ({result.ProtocolError})");
-                return null;
-            }
-        }
 
         [Obsolete]
         public static async Task<byte[]> ReadCmdMisoOld()
@@ -278,32 +332,6 @@ namespace Rca.PoolLabIo
 
             return null;
         }
-
-        private static async void ReadMeasurements(GattCharacteristic sender, GattValueChangedEventArgs args)
-        {
-            MisoSig.ValueChanged -= ReadMeasurements;
-
-            var buffer = await ReadCmdMiso();
-
-            if (buffer != null && buffer.Length > 0)
-            {
-                var measurements = new List<Measurement>();
-                using (var reader = new BinaryReader(new MemoryStream(buffer)))
-                {
-                    var preamble = reader.ReadByte();
-
-                    if (preamble != PREAMBLE)
-                    {
-                        Debug.WriteLine("invalide measurement data");
-                    }
-                    else
-                    {
-                        int d = (buffer.Length - 1) / 16;
-                        for (int i = 0; i < (buffer.Length - 1) / 16; i++)
-                            measurements.Add(Measurement.FromBuffer(reader.ReadBytes(16)));
-                    }
-                }
-            }
-        }
+        #endregion Internal services
     }
 }
