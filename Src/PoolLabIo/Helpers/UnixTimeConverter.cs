@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PlCon
+namespace Rca.PoolLabIo.Helpers
 {
     /// <summary>
     /// Unix timestamp converter

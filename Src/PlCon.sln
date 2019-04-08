@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlCon", "PlCon\PlCon.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoolLabIo_Test", "PoolLabIo_Test\PoolLabIo_Test.csproj", "{B6A4C8DE-F291-4A48-85C2-2EBEB0102302}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoolLabIo", "PoolLabIo\PoolLabIo.csproj", "{2FE0FB79-124B-4129-8BEC-DCF65CCB3900}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,26 @@ Global
 		{B6A4C8DE-F291-4A48-85C2-2EBEB0102302}.Release|x86.ActiveCfg = Release|x86
 		{B6A4C8DE-F291-4A48-85C2-2EBEB0102302}.Release|x86.Build.0 = Release|x86
 		{B6A4C8DE-F291-4A48-85C2-2EBEB0102302}.Release|x86.Deploy.0 = Release|x86
+		{2FE0FB79-124B-4129-8BEC-DCF65CCB3900}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FE0FB79-124B-4129-8BEC-DCF65CCB3900}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FE0FB79-124B-4129-8BEC-DCF65CCB3900}.Debug|ARM.ActiveCfg = Debug|ARM
+		{2FE0FB79-124B-4129-8BEC-DCF65CCB3900}.Debug|ARM.Build.0 = Debug|ARM
+		{2FE0FB79-124B-4129-8BEC-DCF65CCB3900}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{2FE0FB79-124B-4129-8BEC-DCF65CCB3900}.Debug|ARM64.Build.0 = Debug|ARM64
+		{2FE0FB79-124B-4129-8BEC-DCF65CCB3900}.Debug|x64.ActiveCfg = Debug|x64
+		{2FE0FB79-124B-4129-8BEC-DCF65CCB3900}.Debug|x64.Build.0 = Debug|x64
+		{2FE0FB79-124B-4129-8BEC-DCF65CCB3900}.Debug|x86.ActiveCfg = Debug|x86
+		{2FE0FB79-124B-4129-8BEC-DCF65CCB3900}.Debug|x86.Build.0 = Debug|x86
+		{2FE0FB79-124B-4129-8BEC-DCF65CCB3900}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FE0FB79-124B-4129-8BEC-DCF65CCB3900}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FE0FB79-124B-4129-8BEC-DCF65CCB3900}.Release|ARM.ActiveCfg = Release|ARM
+		{2FE0FB79-124B-4129-8BEC-DCF65CCB3900}.Release|ARM.Build.0 = Release|ARM
+		{2FE0FB79-124B-4129-8BEC-DCF65CCB3900}.Release|ARM64.ActiveCfg = Release|ARM64
+		{2FE0FB79-124B-4129-8BEC-DCF65CCB3900}.Release|ARM64.Build.0 = Release|ARM64
+		{2FE0FB79-124B-4129-8BEC-DCF65CCB3900}.Release|x64.ActiveCfg = Release|x64
+		{2FE0FB79-124B-4129-8BEC-DCF65CCB3900}.Release|x64.Build.0 = Release|x64
+		{2FE0FB79-124B-4129-8BEC-DCF65CCB3900}.Release|x86.ActiveCfg = Release|x86
+		{2FE0FB79-124B-4129-8BEC-DCF65CCB3900}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
