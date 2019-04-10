@@ -185,9 +185,10 @@ namespace Rca.PoolLabIo
         }
 
         /// <summary>
-        /// Get all measurements form PoolLab
+        /// Get measurements form PoolLab
         /// </summary>
-        public static async void GetMeasurements()
+        /// <param name="count">Number of measurements to get (0 for autodetect)</param>
+        public static async void GetMeasurements(int count = 0)
         {
             //TODO: Gestaffelte Abarbeitung bei mehreren Daten
             await RegisterNotification(ReadMeasurements);

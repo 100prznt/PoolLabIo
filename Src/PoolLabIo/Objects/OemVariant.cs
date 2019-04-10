@@ -2,6 +2,7 @@
 {
     /// <summary>
     /// Available OEM variants of PoolLab
+    /// See chapter "OEM Variants" on page 18 in "PoolLab 1.0 Bluetooth API" reference
     /// </summary>
     public enum OemVariant : byte
     {
