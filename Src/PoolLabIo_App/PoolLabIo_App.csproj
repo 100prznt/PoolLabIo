@@ -155,6 +155,12 @@
       <Version>6.2.8</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PoolLabIo_DLL\PoolLabIo.csproj">
+      <Project>{2fe0fb79-124b-4129-8bec-dcf65ccb3900}</Project>
+      <Name>PoolLabIo</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

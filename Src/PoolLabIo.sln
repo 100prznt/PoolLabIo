@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoolLabIo_App", "PoolLabIo_App\PoolLabIo_App.csproj", "{D6E8FA8B-4369-485C-99DD-75F97EC3E2FA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2FE0FB79-124B-4129-8BEC-DCF65CCB3900} = {2FE0FB79-124B-4129-8BEC-DCF65CCB3900}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoolLabIo_Tests", "PoolLabIo_Tests\PoolLabIo_Tests.csproj", "{B6A4C8DE-F291-4A48-85C2-2EBEB0102302}"
 EndProject
