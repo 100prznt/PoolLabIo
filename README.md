@@ -6,6 +6,5 @@ Das Pairing des PoolLab® - Photometer muss über den Windows Geräte Manager du
 
 
 #### Markennamen
-PoolLab® ist eine eingetragene Marke der Water-i.d. GmbH
-
+PoolLab® ist eine eingetragene Marke der Water-i.d. GmbH     
 [http://www.poollab.org/](PoolLab.org)
