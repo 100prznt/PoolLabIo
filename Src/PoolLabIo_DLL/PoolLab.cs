@@ -68,13 +68,20 @@ namespace Rca.PoolLabIo
 
         static BluetoothLEDevice deviceReference;
 
+        //static List<DeviceInformation> debugDeviceList = new List<DeviceInformation>();
+
         #endregion Fields
 
         #region Services
         public static bool IsPoolLabServiceDevice(DeviceInformation devInfo)
         {
-            //TODO: Uuid struct testen
-            return string.Equals(devInfo.Id, Uuids.PoolLabSvc.ToString(), StringComparison.OrdinalIgnoreCase);
+            //debugDeviceList.Add(devInfo);
+
+            string devId = devInfo.Id.ToLower();
+
+            return devId.Contains(Uuids.PoolLabSvc.ToString().ToLower());
+
+            //return string.Equals(devInfo.Id, Uuids.PoolLabSvc.ToString(), StringComparison.OrdinalIgnoreCase);
         }
 
         public static async Task Connect(string deviceId)

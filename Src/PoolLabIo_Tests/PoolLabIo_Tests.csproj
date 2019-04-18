@@ -7,8 +7,8 @@
     <ProjectGuid>{B6A4C8DE-F291-4A48-85C2-2EBEB0102302}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Rca.PoolLabIo_Test</RootNamespace>
-    <AssemblyName>PoolLabIo_Test</AssemblyName>
+    <RootNamespace>Rca.PoolLabIoTests</RootNamespace>
+    <AssemblyName>PoolLabIo_Tests</AssemblyName>
     <DefaultLanguage>de-DE</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.17134.0</TargetPlatformVersion>
@@ -149,17 +149,17 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.2.3</Version>
+      <Version>6.2.8</Version>
     </PackageReference>
     <PackageReference Include="MSTest.TestAdapter">
-      <Version>1.3.2</Version>
+      <Version>2.0.0-beta4</Version>
     </PackageReference>
     <PackageReference Include="MSTest.TestFramework">
-      <Version>1.3.2</Version>
+      <Version>2.0.0-beta4</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PoolLabIo\PoolLabIo.csproj">
+    <ProjectReference Include="..\PoolLabIo_DLL\PoolLabIo.csproj">
       <Project>{2fe0fb79-124b-4129-8bec-dcf65ccb3900}</Project>
       <Name>PoolLabIo</Name>
     </ProjectReference>
