@@ -8,13 +8,17 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <Button x:Name="btn_Start" Content="Connect" HorizontalAlignment="Left" Margin="37,31,0,0" VerticalAlignment="Top" Click="Btn_Start_Click"/>
-        <Button x:Name="btn_Read" Content="Read" HorizontalAlignment="Left" Margin="37,135,0,0" VerticalAlignment="Top" Click="Btn_Read_Click" Width="75"/>
-        <Button x:Name="btn_Send" Content="Senden" HorizontalAlignment="Left" Margin="37,78,0,0" VerticalAlignment="Top" Width="75" Click="Btn_Send_Click"/>
-        <TextBox x:Name="txt_Cmd" HorizontalAlignment="Left" Margin="127,78,0,0" Text="AB 01" VerticalAlignment="Top" Width="189"/>
-        <Button x:Name="btn_SetTime" Content="Set Time" HorizontalAlignment="Left" Margin="127,31,0,0" VerticalAlignment="Top" Click="Btn_SetTime_Click"/>
-        <Button x:Name="btn_Restart" Content="Restart" HorizontalAlignment="Left" Margin="222,31,0,0" VerticalAlignment="Top" Click="Btn_Restart_Click"/>
-        <Button x:Name="btn_ShutDown" Content="Shutdown" HorizontalAlignment="Left" Margin="229,135,0,0" VerticalAlignment="Top" Click="Btn_ShutDown_Click"/>
-        <Button x:Name="btn_GetMeas" Content="Read Meas" HorizontalAlignment="Left" Margin="127,135,0,0" VerticalAlignment="Top" Click="Btn_GetMeas_Click"/>
+        <Button x:Name="btn_Start" Content="Verbinden" HorizontalAlignment="Left" Margin="20,17,0,0" VerticalAlignment="Top" Click="Btn_Start_Click" Width="233"/>
+        <Button x:Name="btn_Read" Content="Lesen" HorizontalAlignment="Left" Margin="20,212,0,0" VerticalAlignment="Top" Click="Btn_Read_Click" Width="75"/>
+        <Button x:Name="btn_Send" Content="Senden" HorizontalAlignment="Left" Margin="20,175,0,0" VerticalAlignment="Top" Width="75" Click="Btn_Send_Click"/>
+        <TextBox x:Name="txt_Cmd" HorizontalAlignment="Left" Margin="102,175,0,0" Text="AB 01" VerticalAlignment="Top" Width="151"/>
+        <Button x:Name="btn_SetTime" Content="Zeit einstellen" HorizontalAlignment="Left" Margin="20,96,0,0" VerticalAlignment="Top" Click="Btn_SetTime_Click"/>
+        <Button x:Name="btn_Restart" Content="Neustart" HorizontalAlignment="Left" Margin="20,133,0,0" VerticalAlignment="Top" Click="Btn_Restart_Click" Width="113"/>
+        <Button x:Name="btn_ShutDown" Content="Ausschalten" HorizontalAlignment="Left" Margin="140,59,0,0" VerticalAlignment="Top" Click="Btn_ShutDown_Click" Width="113"/>
+        <Button x:Name="btn_GetMeas" Content="Messdaten" HorizontalAlignment="Left" Margin="140,96,0,0" VerticalAlignment="Top" Click="Btn_GetMeas_Click" Width="113"/>
+        <Button Content="Information" HorizontalAlignment="Left" Margin="20,59,0,0" VerticalAlignment="Top" Width="113" Click="Button_Click"/>
+        <Button Content="Löschen" HorizontalAlignment="Left" Margin="140,133,0,0" VerticalAlignment="Top" Width="113"/>
+        <TextBox x:Name="txt_CmdLength" HorizontalAlignment="Left" Margin="114,257,0,0" Text="8" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="20,263,0,0" Text="CMD Länge:" TextWrapping="Wrap" VerticalAlignment="Top"/>
     </Grid>
 </Page>
