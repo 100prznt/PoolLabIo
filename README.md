@@ -5,9 +5,9 @@ C# Bibliothek zur Bluetooth-Kommunikation mit dem PoolLab® - Photometer.
 Das Pairing des PoolLab® - Photometer muss über den Windows Geräte Manager durchgeführt werden.
 
 ## Komponenten
-* (UWP App)[Src/PoolLabIo_DLL] Debug-Testbench
-* (C# DLL)[Src/PoolLabIo_DLL] PoolLab API Bibliothek
-* (Tests)[Src/PoolLabIo_DLL] Unittests
+* [UWP App](Src/PoolLabIo_DLL) Debug-Testbench
+* [C# DLL](Src/PoolLabIo_DLL) PoolLab API Bibliothek
+* [Tests](Src/PoolLabIo_DLL) Unittests
 
 
 #### Markennamen
