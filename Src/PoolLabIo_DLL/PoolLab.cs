@@ -28,6 +28,11 @@ namespace Rca.PoolLabIo
         /// </summary>
         public const byte PREAMBLE = 0xAB;
 
+        /// <summary>
+        /// Maximum allowed command length
+        /// </summary>
+        const int COMMAND_LENGTH = 20;
+
         //public const int COMMAND_LENGTH = 32;
 
         /// <summary>
@@ -61,7 +66,6 @@ namespace Rca.PoolLabIo
         #region Properties
         public static bool IsConnected { get; set; }
 
-        public static int COMMAND_LENGTH { get; set; }
 
         #endregion Properties
 
@@ -147,8 +151,6 @@ namespace Rca.PoolLabIo
                     Debug.WriteLine("MISO_Signal characteristic supports indicate.");
 #endif
 
-                
-
                 IsConnected = true;
             }
             else
@@ -225,13 +227,13 @@ namespace Rca.PoolLabIo
         public static async Task SendCommand(params byte[] cmd)
         {
             if (cmd.Length > COMMAND_LENGTH)
-                throw new ArgumentOutOfRangeException("Invalide command length (" + cmd.Length + "), maximal allowed are 250 bytes.");
+                throw new ArgumentOutOfRangeException("Invalide command length (" + cmd.Length + "), maximal allowed are " + COMMAND_LENGTH + " bytes.");
 
+            //zero-padding
             var zeroPaddedcmd = new byte[COMMAND_LENGTH];
             Array.Copy(cmd, 0, zeroPaddedcmd, 0, cmd.Length);
 
             await SendRawCommand(CmdMosi, zeroPaddedcmd);
-            //await SendRawCommand(CmdMosi, cmd);
         }
 
         public static async Task SendCommand(IBuffer buffer)
