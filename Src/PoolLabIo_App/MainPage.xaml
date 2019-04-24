@@ -18,7 +18,5 @@
         <Button x:Name="btn_GetMeas" Content="Messdaten" HorizontalAlignment="Left" Margin="140,96,0,0" VerticalAlignment="Top" Click="Btn_GetMeas_Click" Width="113"/>
         <Button Content="Information" HorizontalAlignment="Left" Margin="20,59,0,0" VerticalAlignment="Top" Width="113" Click="Button_Click"/>
         <Button Content="Löschen" HorizontalAlignment="Left" Margin="140,133,0,0" VerticalAlignment="Top" Width="113"/>
-        <TextBox x:Name="txt_CmdLength" HorizontalAlignment="Left" Margin="114,257,0,0" Text="8" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="20,263,0,0" Text="CMD Länge:" TextWrapping="Wrap" VerticalAlignment="Top"/>
     </Grid>
 </Page>

@@ -87,8 +87,6 @@ namespace Rca.PoolLabIoApp
 
         private async void Btn_Send_Click(object sender, RoutedEventArgs e)
         {
-            PoolLab.COMMAND_LENGTH = int.Parse(txt_CmdLength.Text);
-
             var cmdBytes = txt_Cmd.Text.Split(' ');
 
             var writer = new DataWriter() { ByteOrder = ByteOrder.LittleEndian };
@@ -103,31 +101,26 @@ namespace Rca.PoolLabIoApp
 
         private void Btn_SetTime_Click(object sender, RoutedEventArgs e)
         {
-            PoolLab.COMMAND_LENGTH = int.Parse(txt_CmdLength.Text);
             PoolLab.SetTime();
         }
 
         private void Btn_Restart_Click(object sender, RoutedEventArgs e)
         {
-            PoolLab.COMMAND_LENGTH = int.Parse(txt_CmdLength.Text);
             PoolLab.Restart();
         }
 
         private void Btn_ShutDown_Click(object sender, RoutedEventArgs e)
         {
-            PoolLab.COMMAND_LENGTH = int.Parse(txt_CmdLength.Text);
             PoolLab.ShutDown();
         }
 
         private void Btn_GetMeas_Click(object sender, RoutedEventArgs e)
         {
-            PoolLab.COMMAND_LENGTH = int.Parse(txt_CmdLength.Text);
             PoolLab.GetMeasurements();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            PoolLab.COMMAND_LENGTH = int.Parse(txt_CmdLength.Text);
             PoolLab.GetInfo();
         }
     }
