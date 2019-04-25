@@ -425,11 +425,11 @@ namespace Rca.PoolLabIo
             var response = await characteristic.WriteValueAsync(cmd.AsBuffer(), GattWriteOption.WriteWithResponse);
             Debug.WriteLine("WriteResult: " + response);
 
-            //Al
+            //Alternative Abfrage mit WriteValueWithResultAsync()
             //var response = await characteristic.WriteValueWithResultAsync(cmd.AsBuffer());
             //Debug.WriteLine("WriteResult: " + response.Status);
         }
-        
+
         private static async Task RegisterNotification(TypedEventHandler<GattCharacteristic, GattValueChangedEventArgs> receiver = null)
         {
             //MisoSig.ValueChanged -= MisoSig_ValueChangedAsync;
