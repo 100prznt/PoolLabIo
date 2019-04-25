@@ -32,9 +32,7 @@ namespace Rca.PoolLabIo
         /// <summary>
         /// Maximum allowed command length
         /// </summary>
-        const int COMMAND_LENGTH = 20;
-
-        //public const int COMMAND_LENGTH = 32;
+        public const int COMMAND_LENGTH = 20;
 
         /// <summary>
         /// BLE UUIDS of the PoolLab Bluetooth API
@@ -75,9 +73,9 @@ namespace Rca.PoolLabIo
         #endregion Properties
 
         #region Fields
-        static GattCharacteristic cmdMiso = null;
-        static GattCharacteristic cmdMosi = null;
-        static GattCharacteristic misoSig = null;
+        static GattCharacteristic cmdMisoCharacteristic = null;
+        static GattCharacteristic cmdMosiCharacteristic = null;
+        static GattCharacteristic misoSigCharacteristic = null;
 
         static BluetoothLEDevice deviceReference;
 
@@ -111,9 +109,9 @@ namespace Rca.PoolLabIo
                 //Put following two lines in try/catch to or check for null!!
                 var characs = await result.Services.Single(s => s.Uuid == Uuids.PoolLabSvc).GetCharacteristicsAsync();
 
-                cmdMiso = characs.Characteristics.Single(c => c.Uuid == Uuids.CmdMiso);
-                cmdMosi = characs.Characteristics.Single(c => c.Uuid == Uuids.CmdMosi);
-                misoSig = characs.Characteristics.Single(c => c.Uuid == Uuids.MisoSig);
+                cmdMisoCharacteristic = characs.Characteristics.Single(c => c.Uuid == Uuids.CmdMiso);
+                cmdMosiCharacteristic = characs.Characteristics.Single(c => c.Uuid == Uuids.CmdMosi);
+                misoSigCharacteristic = characs.Characteristics.Single(c => c.Uuid == Uuids.MisoSig);
 
 #if DEBUG
                 if (BitConverter.IsLittleEndian)
@@ -121,39 +119,39 @@ namespace Rca.PoolLabIo
                 else
                     Debug.WriteLine("BigEndian");
 
-                if (cmdMiso.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Read))
+                if (cmdMisoCharacteristic.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Read))
                     Debug.WriteLine("CommandMISO characteristic supports reading from it.");
-                if (cmdMiso.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Write))
+                if (cmdMisoCharacteristic.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Write))
                     Debug.WriteLine("CommandMISO characteristic supports writing.");
-                if (cmdMiso.CharacteristicProperties.HasFlag(GattCharacteristicProperties.ReliableWrites))
+                if (cmdMisoCharacteristic.CharacteristicProperties.HasFlag(GattCharacteristicProperties.ReliableWrites))
                     Debug.WriteLine("MISO_Signal characteristic supports reliable writing.");
-                if (cmdMiso.CharacteristicProperties.HasFlag(GattCharacteristicProperties.WriteWithoutResponse))
+                if (cmdMisoCharacteristic.CharacteristicProperties.HasFlag(GattCharacteristicProperties.WriteWithoutResponse))
                     Debug.WriteLine("MISO_Signal characteristic supports writing without response.");
-                if (cmdMiso.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Notify))
+                if (cmdMisoCharacteristic.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Notify))
                     Debug.WriteLine("CommandMISO characteristic supports subscribing to notifications.");
 
-                if (cmdMosi.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Read))
+                if (cmdMosiCharacteristic.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Read))
                     Debug.WriteLine("CommandMOSI characteristic supports reading from it.");
-                if (cmdMosi.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Write))
+                if (cmdMosiCharacteristic.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Write))
                     Debug.WriteLine("CommandMOSI characteristic supports writing.");
-                if (cmdMosi.CharacteristicProperties.HasFlag(GattCharacteristicProperties.ReliableWrites))
+                if (cmdMosiCharacteristic.CharacteristicProperties.HasFlag(GattCharacteristicProperties.ReliableWrites))
                     Debug.WriteLine("MISO_Signal characteristic supports reliable writing.");
-                if (cmdMosi.CharacteristicProperties.HasFlag(GattCharacteristicProperties.WriteWithoutResponse))
+                if (cmdMosiCharacteristic.CharacteristicProperties.HasFlag(GattCharacteristicProperties.WriteWithoutResponse))
                     Debug.WriteLine("MISO_Signal characteristic supports writing without response.");
-                if (cmdMosi.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Notify))
+                if (cmdMosiCharacteristic.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Notify))
                     Debug.WriteLine("CommandMOSI characteristic supports subscribing to notifications.");
 
-                if (misoSig.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Read))
+                if (misoSigCharacteristic.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Read))
                     Debug.WriteLine("MISO_Signal characteristic supports reading from it.");
-                if (misoSig.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Write))
+                if (misoSigCharacteristic.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Write))
                     Debug.WriteLine("MISO_Signal characteristic supports writing.");
-                if (misoSig.CharacteristicProperties.HasFlag(GattCharacteristicProperties.ReliableWrites))
+                if (misoSigCharacteristic.CharacteristicProperties.HasFlag(GattCharacteristicProperties.ReliableWrites))
                     Debug.WriteLine("MISO_Signal characteristic supports reliable writing.");
-                if (misoSig.CharacteristicProperties.HasFlag(GattCharacteristicProperties.WriteWithoutResponse))
+                if (misoSigCharacteristic.CharacteristicProperties.HasFlag(GattCharacteristicProperties.WriteWithoutResponse))
                     Debug.WriteLine("MISO_Signal characteristic supports writing without response.");
-                if (misoSig.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Notify))
+                if (misoSigCharacteristic.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Notify))
                     Debug.WriteLine("MISO_Signal characteristic supports subscribing to notifications.");
-                if (misoSig.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Indicate))
+                if (misoSigCharacteristic.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Indicate))
                     Debug.WriteLine("MISO_Signal characteristic supports indicate.");
 #endif
 
@@ -166,9 +164,9 @@ namespace Rca.PoolLabIo
         }
 
         /// <summary>
-        /// Get information about the device
+        /// Get information about the connected PoolLab
         /// </summary>
-        /// <returns></returns>
+        /// <returns>PoolLab device infromations</returns>
         public static async Task<PoolLabInformation> GetInfoAsync()
         {
             tcsPoolLabInfo = new TaskCompletionSource<PoolLabInformation>();
@@ -182,6 +180,11 @@ namespace Rca.PoolLabIo
             return await tcsPoolLabInfo.Task;
         }
 
+        /// <summary>
+        /// Get measurements form the connected PoolLab
+        /// </summary>
+        /// <param name="count">Number of measurements to get</param>
+        /// <returns>Measurement data</returns>
         public static async Task<IEnumerable<Measurement>>GetMeasurementsAsync(int count)
         {
             var measurements = new List<Measurement>();
@@ -287,7 +290,7 @@ namespace Rca.PoolLabIo
             var zeroPaddedcmd = new byte[COMMAND_LENGTH];
             Array.Copy(cmd, 0, zeroPaddedcmd, 0, cmd.Length);
 
-            await SendRawCommand(cmdMosi, zeroPaddedcmd);
+            await SendRawCommand(cmdMosiCharacteristic, zeroPaddedcmd);
         }
 
         public static async Task SendCommand(IBuffer buffer)
@@ -300,7 +303,7 @@ namespace Rca.PoolLabIo
 
         public static async Task<byte[]> ReadCmdMiso()
         {
-            var result = await cmdMiso.ReadValueAsync(BluetoothCacheMode.Uncached);
+            var result = await cmdMisoCharacteristic.ReadValueAsync(BluetoothCacheMode.Uncached);
             if (result.Status == GattCommunicationStatus.Success)
             {
                 CryptographicBuffer.CopyToByteArray(result.Value, out byte[] data);
@@ -323,7 +326,7 @@ namespace Rca.PoolLabIo
         #region Internal services
         private static async void ReadResult(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
-            misoSig.ValueChanged -= ReadResult;
+            misoSigCharacteristic.ValueChanged -= ReadResult;
 
             var buffer = await ReadCmdMiso();
 
@@ -352,7 +355,7 @@ namespace Rca.PoolLabIo
 
         private static async void ReadMeasurements(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
-            misoSig.ValueChanged -= ReadMeasurements;
+            misoSigCharacteristic.ValueChanged -= ReadMeasurements;
 
             var buffer = await ReadCmdMiso();
 
@@ -384,7 +387,7 @@ namespace Rca.PoolLabIo
 
         private static async void ReadPoolLabInformation(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
-            misoSig.ValueChanged -= ReadPoolLabInformation;
+            misoSigCharacteristic.ValueChanged -= ReadPoolLabInformation;
 
             var buffer = await ReadCmdMiso();
 
@@ -403,9 +406,9 @@ namespace Rca.PoolLabIo
 
         private static async void MisoSig_ValueChangedAsync(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
-            misoSig.ValueChanged -= MisoSig_ValueChangedAsync;
+            misoSigCharacteristic.ValueChanged -= MisoSig_ValueChangedAsync;
 
-            GattReadResult result = await cmdMiso.ReadValueAsync(BluetoothCacheMode.Uncached);
+            GattReadResult result = await cmdMisoCharacteristic.ReadValueAsync(BluetoothCacheMode.Uncached);
             CryptographicBuffer.CopyToByteArray(result.Value, out byte[] data);
 
             Debug.WriteLine("MISO_Sig notification");
@@ -439,19 +442,19 @@ namespace Rca.PoolLabIo
                 GattCommunicationStatus notifyResult = GattCommunicationStatus.Unreachable;
 
                 //Write the CCCD in order for server to send notifications.               
-                notifyResult = await misoSig.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.None);
+                notifyResult = await misoSigCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.None);
 
                 if (notifyResult == GattCommunicationStatus.Success)
                 {
-                    notifyResult = await misoSig.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
+                    notifyResult = await misoSigCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
                     if (notifyResult == GattCommunicationStatus.Success)
                     {
                         Debug.WriteLine("Successfully registered for notifications on MISO_Signal");
 
                         if (receiver == null)
-                            misoSig.ValueChanged += MisoSig_ValueChangedAsync;
+                            misoSigCharacteristic.ValueChanged += MisoSig_ValueChangedAsync;
                         else
-                            misoSig.ValueChanged += receiver;
+                            misoSigCharacteristic.ValueChanged += receiver;
 
                     }
                     else
