@@ -25,9 +25,9 @@ namespace Rca.PoolLabIo.Objects.Extensions
             }
 
             if (attr == null)
-                return "";
+                return null;
             else
-                return attr.DisplayUnit;
+                return attr.Unit;
 
         }
 
@@ -50,6 +50,27 @@ namespace Rca.PoolLabIo.Objects.Extensions
                 return measType.ToString();
             else
                 return attr.DisplayName;
+        }
+
+        public static string GetElement(this MeasurementType measType)
+        {
+            Attribute[] attributes = measType.GetAttributes();
+
+            MeasurementTypeAttribute attr = null;
+
+            for (int i = 0; i < attributes.Length; i++)
+            {
+                if (attributes[i].GetType() == typeof(MeasurementTypeAttribute))
+                {
+                    attr = (MeasurementTypeAttribute)attributes[i];
+                    break;
+                }
+            }
+
+            if (attr == null)
+                return null;
+            else
+                return attr.Element;
         }
 
         public static Attribute[] GetAttributes(this MeasurementType measType)

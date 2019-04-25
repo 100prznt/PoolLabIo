@@ -16,8 +16,7 @@
             <controls:DataGrid.Columns>
                 <controls:DataGridTextColumn Header="ID" Width="SizeToHeader" Binding="{Binding Id}" FontSize="20" />
                 <controls:DataGridTextColumn Header="Typ" Width="SizeToCells" Binding="{Binding DisplayName}" FontSize="20" />
-                <controls:DataGridTextColumn Header="Wert" Width="SizeToHeader" Binding="{Binding Value}"  FontSize="20" />
-                <controls:DataGridTextColumn Header="Einheit" Width="SizeToHeader" Binding="{Binding Unit}"  FontSize="20" />
+                <controls:DataGridTextColumn Header="Messwert" Width="SizeToCells" Binding="{Binding FormattedValue}"  FontSize="20" />
                 <controls:DataGridTextColumn Header="Status" Width="SizeToCells" Binding="{Binding Status}"  FontSize="20" />
                 <controls:DataGridTextColumn Header="Zeitstempel" Width="SizeToCells" Binding="{Binding Timestamp}"  FontSize="20" />
             </controls:DataGrid.Columns>

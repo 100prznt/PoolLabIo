@@ -68,11 +68,11 @@ namespace Rca.PoolLabIo.Objects
             }
         }
 
-        public string Unit
+        public string FormattedValue
         {
             get
             {
-                return Type.GetUnit();
+                return Value.ToString("f2") + " " + Type.GetUnit() + " " + Type.GetElement();
             }
         }
 
