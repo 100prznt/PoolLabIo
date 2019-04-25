@@ -123,6 +123,7 @@
     <Compile Include="BleAdapter.cs" />
     <Compile Include="Helpers\UnixTimeConverter.cs" />
     <Compile Include="Objects\CommandType.cs" />
+    <Compile Include="Objects\Extensions\MeasurementTypeExtension.cs" />
     <Compile Include="Objects\ResultCode.cs" />
     <Compile Include="Objects\PoolLabInformation.cs" />
     <Compile Include="Objects\Measurement.cs" />

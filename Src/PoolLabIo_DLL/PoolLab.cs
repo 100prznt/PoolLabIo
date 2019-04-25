@@ -172,8 +172,8 @@ namespace Rca.PoolLabIo
             tcsPoolLabInfo = new TaskCompletionSource<PoolLabInformation>();
 
             //Bsp: https://stackoverflow.com/questions/18760252/timeout-an-async-method-implemented-with-taskcompletionsource
-            var cts = new CancellationTokenSource(Timeout);
-            cts.Token.Register(() => tcsPoolLabInfo.TrySetCanceled(), useSynchronizationContext: false);
+            //var cts = new CancellationTokenSource(Timeout);
+            //cts.Token.Register(() => tcsPoolLabInfo.TrySetCanceled(), useSynchronizationContext: false);
 
             CmdGetInfo();
             
@@ -194,12 +194,13 @@ namespace Rca.PoolLabIo
                 tcsMeasurements = new TaskCompletionSource<Measurement[]>();
 
                 //Bsp: https://stackoverflow.com/questions/18760252/timeout-an-async-method-implemented-with-taskcompletionsource
-                var cts = new CancellationTokenSource(Timeout);
-                cts.Token.Register(() => tcsPoolLabInfo.TrySetCanceled(), useSynchronizationContext: false);
+                //var cts = new CancellationTokenSource(Timeout);
+                //cts.Token.Register(() => tcsMeasurements.TrySetCanceled(), useSynchronizationContext: false);
 
                 CmdGetMeasurements(i * 8);
 
                 measurements.AddRange(await tcsMeasurements.Task);
+                tcsMeasurements = null;
             }
 
             return measurements;
@@ -374,7 +375,11 @@ namespace Rca.PoolLabIo
                     {
                         int d = (buffer.Length - 1) / 16;
                         for (int i = 0; i < (buffer.Length - 1) / 16; i++)
-                            measurements.Add(Measurement.FromBuffer(reader.ReadBytes(16)));
+                        {
+                            var meas = Measurement.FromBuffer(reader.ReadBytes(16));
+                            if (meas.Type != 0)
+                                measurements.Add(meas);
+                        }
                     }
                 }
                 tcsMeasurements?.TrySetResult(measurements.ToArray());

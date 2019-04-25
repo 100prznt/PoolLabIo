@@ -114,14 +114,25 @@ namespace Rca.PoolLabIoApp
             PoolLab.CmdShutDown();
         }
 
-        private void Btn_GetMeas_Click(object sender, RoutedEventArgs e)
+        private async void Btn_GetMeas_Click(object sender, RoutedEventArgs e)
         {
-            PoolLab.CmdGetMeasurements();
+            var measurements = await PoolLab.GetMeasurementsAsync(5);
+
+            ViewModel.Measurements = measurements.ToList();
+
+
+            var dlg = new MeasurementDialog();
+            dlg.ShowAsync();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             PoolLab.CmdGetInfo();
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

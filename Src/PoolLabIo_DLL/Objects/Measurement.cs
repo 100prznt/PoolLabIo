@@ -1,4 +1,5 @@
 ﻿using Rca.PoolLabIo.Helpers;
+using Rca.PoolLabIo.Objects.Extensions;
 using System;
 using System.IO;
 
@@ -56,6 +57,22 @@ namespace Rca.PoolLabIo.Objects
             get
             {
                 return Convert.ToDouble(m_RawValue);
+            }
+        }
+
+        public  string DisplayName
+        {
+            get
+            {
+                return Type.GetDisplayName();
+            }
+        }
+
+        public string Unit
+        {
+            get
+            {
+                return Type.GetUnit();
             }
         }
 
