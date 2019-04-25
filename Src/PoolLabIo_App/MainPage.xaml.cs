@@ -101,27 +101,27 @@ namespace Rca.PoolLabIoApp
 
         private void Btn_SetTime_Click(object sender, RoutedEventArgs e)
         {
-            PoolLab.SetTime();
+            PoolLab.CmdSetTime();
         }
 
         private void Btn_Restart_Click(object sender, RoutedEventArgs e)
         {
-            PoolLab.Restart();
+            PoolLab.CmdRestart();
         }
 
         private void Btn_ShutDown_Click(object sender, RoutedEventArgs e)
         {
-            PoolLab.ShutDown();
+            PoolLab.CmdShutDown();
         }
 
         private void Btn_GetMeas_Click(object sender, RoutedEventArgs e)
         {
-            PoolLab.GetMeasurements();
+            PoolLab.CmdGetMeasurements();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            PoolLab.GetInfo();
+            PoolLab.CmdGetInfo();
         }
     }
 }
