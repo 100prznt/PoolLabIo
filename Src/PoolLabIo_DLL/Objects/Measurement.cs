@@ -20,6 +20,10 @@ namespace Rca.PoolLabIo.Objects
             {
                 return m_RawId;
             }
+            set
+            {
+                m_RawId = (ushort)value;
+            }
         }
 
         /// <summary>
@@ -57,6 +61,10 @@ namespace Rca.PoolLabIo.Objects
             get
             {
                 return Convert.ToDouble(m_RawValue);
+            }
+            set
+            {
+                m_RawValue = Convert.ToSingle(value);
             }
         }
 

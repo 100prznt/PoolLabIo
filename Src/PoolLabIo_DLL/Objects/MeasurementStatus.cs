@@ -16,6 +16,10 @@
         /// <summary>
         /// Result is Overrange
         /// </summary>
-        Overrange
+        Overrange,
+        /// <summary>
+        /// Result is calculated by the library
+        /// </summary>
+        Calculated = 0xFF
     }
 }

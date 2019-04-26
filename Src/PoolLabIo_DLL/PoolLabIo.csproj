@@ -121,7 +121,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BleAdapter.cs" />
+    <Compile Include="Helpers\DateTimeExtensions.cs" />
     <Compile Include="Helpers\UnixTimeConverter.cs" />
+    <Compile Include="Objects\MeasurementAddResult.cs" />
+    <Compile Include="Objects\MeasurementSession.cs" />
     <Compile Include="Objects\CommandType.cs" />
     <Compile Include="Objects\Extensions\MeasurementTypeExtension.cs" />
     <Compile Include="Objects\ResultCode.cs" />
