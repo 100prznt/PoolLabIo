@@ -91,14 +91,37 @@ namespace Rca.PoolLabIo.Objects
         }
 
         /// <summary>
-        /// Provides a collection of calculated measurements
+        /// Provides a collection of calculated values
         /// </summary>
         /// <returns></returns>
-        public Collection<Measurement> GetCalculatedMeasurements()
+        public Collection<Measurement> GetCalculatedValues()
         {
+            var calculatedResults = new Collection<Measurement>();
             var types = this.Select(m => m.Type).Distinct();
 
-            throw new NotImplementedException();
+            #region FreeChlorine
+            //Freies Chlor wird nach der Methode DPD N° 1 gemessen. Hierbei wird die Indikatorchemikalie N,N-diethyl-p-phenylendiaminsulfat (DPD)
+            //durch das Chlor oxidiert und verfärbt sich rot. Je intensiver die Verfärbung, desto mehr Chlor ist im Wasser vorhanden. Mittels photo-
+            //metrischer Messung oder optischem Vergleich mit einer Farbskala kann nun die Chlorkonzentration ermittelt werden.
+            //Wird dieser Probe nun eine DPD N° 3-Tablette zugegeben, so wird zusätzlich auch das gebundene Chlor angezeigt. Der Messwert entspricht
+            //nun also der Gesamtchlorkonzentration.
+            //Die Konzentration des gebundenen Chlors entspricht der Differenz aus Gesamtchlor und freiem Chlor.
+            //Quelle: https://poollab.org/de/parameters
+            if (types.Contains(MeasurementType.TotalChlorine) && types.Contains(MeasurementType.FreeChlorine))
+            {
+                var boundChorine = new Measurement()
+                {
+                    Id = ushort.MaxValue,
+                    Value = GetAverage(MeasurementType.TotalChlorine).Value - GetAverage(MeasurementType.FreeChlorine).Value,
+                    Timestamp = this.Timestamp,
+                    Type = MeasurementType.BoundChlorine,
+                    Status = MeasurementStatus.Calculated
+                };
+                calculatedResults.Add(boundChorine);
+            }
+            #endregion FreeChlorine
+
+            return calculatedResults;
         }
 
         public Measurement GetAverage(MeasurementType type)
@@ -128,7 +151,7 @@ namespace Rca.PoolLabIo.Objects
             foreach (var type in types)
                 summary.Add(GetAverage(type));
 
-            foreach (var calcMeas in GetCalculatedMeasurements())
+            foreach (var calcMeas in GetCalculatedValues())
                 summary.Add(calcMeas);
 
             return summary;
