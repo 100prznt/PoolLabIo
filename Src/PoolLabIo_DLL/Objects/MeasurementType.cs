@@ -43,6 +43,8 @@ namespace Rca.PoolLabIo.Objects
         Copper = 22,
         [MeasurementType("Härte (Kalzium)", "mg/l", "CaCO3 (ppm)", 0, 500, 0)]
         Calcium = 23,
-        OzoneIpoChlorine = 24
+        OzoneIpoChlorine = 24,
+        [MeasurementType("Gebnundenes Chlor", "mg/l", "bCl (ppm)", double.NaN, double.NaN, 0)]
+        BoundChlorine = 128
     }
 }
