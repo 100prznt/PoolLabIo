@@ -9,7 +9,7 @@ namespace Rca.PoolLabIo.Objects.Extensions
 {
     public static class MeasurementTypeExtension
     {
-        public static string GetUnit(this MeasurementType measType)
+        public static string GetUnit(this MeasurementTypes measType)
         {
             Attribute[] attributes = measType.GetAttributes();
 
@@ -31,7 +31,7 @@ namespace Rca.PoolLabIo.Objects.Extensions
 
         }
 
-        public static string GetDisplayName(this MeasurementType measType)
+        public static string GetDisplayName(this MeasurementTypes measType)
         {
             Attribute[] attributes = measType.GetAttributes();
 
@@ -52,7 +52,7 @@ namespace Rca.PoolLabIo.Objects.Extensions
                 return attr.DisplayName;
         }
 
-        public static string GetElement(this MeasurementType measType)
+        public static string GetElement(this MeasurementTypes measType)
         {
             Attribute[] attributes = measType.GetAttributes();
 
@@ -73,7 +73,7 @@ namespace Rca.PoolLabIo.Objects.Extensions
                 return attr.Element;
         }
 
-        public static Attribute[] GetAttributes(this MeasurementType measType)
+        public static Attribute[] GetAttributes(this MeasurementTypes measType)
         {
             var fi = measType.GetType().GetField(measType.ToString());
             Attribute[] attributes = (Attribute[])fi.GetCustomAttributes(typeof(Attribute), false);

@@ -107,14 +107,14 @@ namespace Rca.PoolLabIo.Objects
             //nun also der Gesamtchlorkonzentration.
             //Die Konzentration des gebundenen Chlors entspricht der Differenz aus Gesamtchlor und freiem Chlor.
             //Quelle: https://poollab.org/de/parameters
-            if (types.Contains(MeasurementType.TotalChlorine) && types.Contains(MeasurementType.FreeChlorine))
+            if (types.Contains(MeasurementTypes.TotalChlorine) && types.Contains(MeasurementTypes.FreeChlorine))
             {
                 var boundChorine = new Measurement()
                 {
                     Id = ushort.MaxValue,
-                    Value = GetAverage(MeasurementType.TotalChlorine).Value - GetAverage(MeasurementType.FreeChlorine).Value,
+                    Value = GetAverage(MeasurementTypes.TotalChlorine).Value - GetAverage(MeasurementTypes.FreeChlorine).Value,
                     Timestamp = this.Timestamp,
-                    Type = MeasurementType.BoundChlorine,
+                    Type = MeasurementTypes.BoundChlorine,
                     Status = MeasurementStatus.Calculated
                 };
                 calculatedResults.Add(boundChorine);
@@ -124,7 +124,7 @@ namespace Rca.PoolLabIo.Objects
             return calculatedResults;
         }
 
-        public Measurement GetAverage(MeasurementType type)
+        public Measurement GetAverage(MeasurementTypes type)
         {
             var meas = new Measurement()
             {

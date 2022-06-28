@@ -3,7 +3,7 @@
     /// <summary>
     /// Available commands and their IDs
     /// </summary>
-    public enum CommandType : byte
+    public enum CommandTypes : byte
     {
         /// <summary>
         /// Returns information about the device
@@ -28,6 +28,22 @@
         /// <summary>
         /// Delete all saved measurements from the PoolLab
         /// </summary>
-        PCMD_API_RESET_MEASURES = 0x06
+        PCMD_API_RESET_MEASURES = 0x06,
+        /// <summary>
+        /// Increase PoolLab's LCD contrast by 1 level.
+        /// </summary>
+        PCMD_API_SET_CONTRAST_PLUS = 0x08,
+        /// <summary>
+        /// Decrease PoolLab®'s LCD contrast by 1 level.
+        /// </summary>
+        PCMD_API_SET_CONTRAST_MINUS = 0x09,
+        /// <summary>
+        /// Read device unit configuration.
+        /// </summary>
+        PCMD_API_GET_PPM_MGL = 0x0A,
+        /// <summary>
+        /// Set device unit configuration.
+        /// </summary>
+        PCMD_API_SET_PPM_MGL = 0x0B
     }
 }

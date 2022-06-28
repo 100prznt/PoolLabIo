@@ -28,9 +28,9 @@ namespace Rca.PoolLabIo.Objects
 
         /// <summary>
         /// Measurement type
-        /// <seealso cref="MeasurementType"/>
+        /// <seealso cref="MeasurementTypes"/>
         /// </summary>
-        public MeasurementType Type { get; set; } // 1 byte
+        public MeasurementTypes Type { get; set; } // 1 byte
 
         /// <summary>
         /// Measurement status
@@ -101,7 +101,7 @@ namespace Rca.PoolLabIo.Objects
                 var result = new Measurement
                 {
                     m_RawId = reader.ReadUInt16(),
-                    Type = (MeasurementType)reader.ReadByte(),
+                    Type = (MeasurementTypes)reader.ReadByte(),
                     Status = (MeasurementStatus)reader.ReadByte(),
                     m_RawTimestamp = reader.ReadUInt32(),
                     m_RawValue = reader.ReadSingle()

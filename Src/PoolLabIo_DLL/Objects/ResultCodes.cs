@@ -3,7 +3,7 @@
     /// <summary>
     /// Default result codes
     /// </summary>
-    public enum ResultCode : byte
+    public enum ResultCodes : byte
     {
         /// <summary>
         /// OK
@@ -12,6 +12,6 @@
         /// <summary>
         /// Error
         /// </summary>
-        PCMD_RESPONSE_ERR
+        PCMD_RESPONSE_ERR = 0x02
     }
 }

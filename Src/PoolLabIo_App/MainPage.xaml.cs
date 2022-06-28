@@ -130,9 +130,20 @@ namespace Rca.PoolLabIoApp
             PoolLab.CmdGetInfo();
         }
 
+
+        private void btn_ContrastMinus_Click_1(object sender, RoutedEventArgs e)
+        {
+            PoolLab.CmdDecreaseContrast();
+        }
+
+        private void btn_ContrastPlus_Click_1(object sender, RoutedEventArgs e)
+        {
+            PoolLab.CmdIncreaseContrast();
+        }
+
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-
+            PoolLab.CmdResetMeasurements();
         }
     }
 }

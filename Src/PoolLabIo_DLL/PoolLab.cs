@@ -32,7 +32,7 @@ namespace Rca.PoolLabIo
         /// <summary>
         /// Maximum allowed command length
         /// </summary>
-        public const int COMMAND_LENGTH = 20;
+        public const int COMMAND_LENGTH = 128;
 
         /// <summary>
         /// BLE UUIDS of the PoolLab Bluetooth API
@@ -115,9 +115,9 @@ namespace Rca.PoolLabIo
 
 #if DEBUG
                 if (BitConverter.IsLittleEndian)
-                    Debug.WriteLine("LittleEndian");
+                    Debug.WriteLine("BitConverter is set to LittleEndian");
                 else
-                    Debug.WriteLine("BigEndian");
+                    Debug.WriteLine("BitConverter is set to BigEndian");
 
                 if (cmdMisoCharacteristic.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Read))
                     Debug.WriteLine("CommandMISO characteristic supports reading from it.");
@@ -214,7 +214,7 @@ namespace Rca.PoolLabIo
         {
             await RegisterNotification(ReadPoolLabInformation);
             
-            SendCommand(PREAMBLE, (byte)CommandType.PCMD_API_GET_INFO);
+            SendCommand(PREAMBLE, (byte)CommandTypes.PCMD_API_GET_INFO, 0x00);
         }
 
         /// <summary>
@@ -233,10 +233,36 @@ namespace Rca.PoolLabIo
         {
             await RegisterNotification(ReadResult);
 
-            var cmdBytes = new List<byte> { PREAMBLE, (byte)CommandType.PCMD_API_SET_TIME };
-            cmdBytes.AddRange(BitConverter.GetBytes(time.ToUnixTime()));
+            var buffer = new byte[128];
 
-            SendCommand(cmdBytes.ToArray());
+            using (var ms = new MemoryStream(128))
+            {
+                using (var bw = new BinaryWriter(ms))
+                {
+                    bw.Write(PREAMBLE);
+                    bw.Write((byte)CommandTypes.PCMD_API_SET_TIME);
+                    bw.Seek(1, SeekOrigin.Current);
+                    bw.Write(BitConverter.GetBytes(time.ToUnixTime()));
+                    ms.Position = 0;
+                    ms.Read(buffer, 0, 128);
+                }
+            }
+
+            SendCommand(buffer);
+        }
+
+        public static async Task CmdIncreaseContrast()
+        {
+            await RegisterNotification(ReadResult);
+
+            SendCommand(PREAMBLE, (byte)CommandTypes.PCMD_API_SET_CONTRAST_PLUS, 0x00);
+        }
+
+        public static async Task CmdDecreaseContrast()
+        {
+            await RegisterNotification(ReadResult);
+
+            SendCommand(PREAMBLE, (byte)CommandTypes.PCMD_API_SET_CONTRAST_MINUS, 0x00);
         }
 
         /// <summary>
@@ -244,7 +270,7 @@ namespace Rca.PoolLabIo
         /// </summary>
         public static void CmdRestart()
         {
-            SendCommand(PREAMBLE, (byte)CommandType.PCMD_API_RESET_DEVICE);
+            SendCommand(PREAMBLE, (byte)CommandTypes.PCMD_API_RESET_DEVICE, 0x00);
         }
 
         /// <summary>
@@ -252,7 +278,7 @@ namespace Rca.PoolLabIo
         /// </summary>
         public static void CmdShutDown()
         {
-            SendCommand(PREAMBLE, (byte)CommandType.PCMD_API_SLEEP_DEVICE);
+            SendCommand(PREAMBLE, (byte)CommandTypes.PCMD_API_SLEEP_DEVICE, 0x00);
         }
 
         /// <summary>
@@ -266,7 +292,7 @@ namespace Rca.PoolLabIo
             byte cell = (byte)(index / 16);
             byte selector = (byte)(index / 8 % 2);
                        
-            SendCommand(PREAMBLE, (byte)CommandType.PCMD_API_GET_MEASURES, 0x00, cell, 0x00, selector);
+            SendCommand(PREAMBLE, (byte)CommandTypes.PCMD_API_GET_MEASURES, 0x00, cell, 0x00, selector);
         }
 
         /// <summary>
@@ -276,7 +302,7 @@ namespace Rca.PoolLabIo
         {
             await RegisterNotification(ReadResult);
 
-            SendCommand(PREAMBLE, (byte)CommandType.PCMD_API_RESET_MEASURES);
+            SendCommand(PREAMBLE, (byte)CommandTypes.PCMD_API_RESET_MEASURES);
         }
 
         #endregion Commands
@@ -339,12 +365,13 @@ namespace Rca.PoolLabIo
 
                     if (preamble != PREAMBLE)
                     {
-                        Debug.WriteLine("invalide result data");
+                        Debug.WriteLine("invalid result data");
                     }
                     else
                     {
-                        var res = (ResultCode)reader.ReadByte();
+                        var res = (ResultCodes)reader.ReadByte();
                         //TODO: Ergebnis verarbeiten...
+                        Debug.WriteLine(res);
                     }
                 }
             }

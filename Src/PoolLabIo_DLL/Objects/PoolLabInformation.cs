@@ -13,79 +13,64 @@ namespace Rca.PoolLabIo.Objects
         /// <summary>
         /// OEM ID of the device
         /// </summary>
-        public OemVariant ActiveId { get; set; }
+        public OemVariants ActiveId { get; private set; }
 
         /// <summary>
         /// Firmware version code
         /// </summary>
-        public int FwVersion
-        {
-            get
-            {
-                return m_RawFwVersion;
-            }
-        }
+        public int FwVersion => m_RawFwVersion;
 
         /// <summary>
         /// Number of saved measurement results on the device
         /// </summary>
-        public int ResultCode
-        {
-            get
-            {
-                return m_RawResultCode;
-            }
-        }
+        public int ResultCount => m_RawResultCount;
 
         /// <summary>
         /// Current date/time
         /// </summary>
-        public DateTime DeviceTime
-        {
-            get
-            {
-                return UnixTimeConverter.UnixTimeToDateTime(m_RawDeviceTime);
-            }
-        }
+        public DateTime DeviceTime => UnixTimeConverter.UnixTimeToDateTime(m_RawDeviceTime);
+
+        /// <summary>
+        /// MAC-Address of the PoolLAB
+        /// </summary>
+        public byte[] Mac { get; private set; } //00:A0:50:NN:NN:NN
 
         /// <summary>
         /// Battery charge level in percent (0..100)
         /// </summary>
-        public int BatteryLevel
-        {
-            get
-            {
-                return m_RawBatteryLevel;
-            }
-        }
+        public int BatteryLevel => m_RawBatteryLevel;
+        
 
         #endregion Properties
 
         #region Members
-        ushort m_RawFwVersion; // 2 byte
-        ushort m_RawResultCode; // 2 byte
-        uint m_RawDeviceTime; // 8 byte
-        byte[] m_RawMac; // 6 byte
-        ushort m_RawBatteryLevel; //2 byte
+        ushort m_RawFwVersion;      // 2 byte
+        ushort m_RawResultCount;    // 2 byte
+        ulong m_RawDeviceTime;      // 8 byte
+        ushort m_RawBatteryLevel;   // 2 byte
 
         #endregion Members
 
         #region Services
-        public static PoolLabInformation FromBuffer(byte[] buffer, int index = 0)
+        /// <summary>
+        /// Decode a binary buffer to a PoolLabInformation object
+        /// </summary>
+        /// <param name="buffer">Binary buffer</param>
+        /// <param name="index">Data start position in buffer</param>
+        /// <returns>Decoded object</returns>
+        public static PoolLabInformation FromBuffer(byte[] buffer, int index = 1)
         {
             using (var reader = new BinaryReader(new MemoryStream(buffer, index, buffer.Length - index)))
             {
-                var result = new PoolLabInformation
+                return  new PoolLabInformation
                 {
-                    ActiveId = (OemVariant)reader.ReadByte(),
+                    ActiveId = (OemVariants)reader.ReadUInt16(),
                     m_RawFwVersion = reader.ReadUInt16(),
-                    m_RawResultCode = reader.ReadUInt16(),
-                    m_RawDeviceTime = reader.ReadUInt32(),
-                    m_RawMac = reader.ReadBytes(6),
+                    m_RawResultCount = reader.ReadUInt16(),
+                    m_RawDeviceTime = reader.ReadUInt64(),
+                    Mac = reader.ReadBytes(6),
                     m_RawBatteryLevel = reader.ReadUInt16()
                 };
-
-                return result;
             }
         }
 
