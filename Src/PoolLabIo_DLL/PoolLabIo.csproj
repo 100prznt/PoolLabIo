@@ -125,11 +125,13 @@
     <Compile Include="Helpers\DateTimeExtensions.cs" />
     <Compile Include="Helpers\UnixTimeConverter.cs" />
     <Compile Include="IsExternalInit.cs" />
+    <Compile Include="MeasurementSeries\SeriesBuilder.cs" />
+    <Compile Include="MeasurementSeries\SeriesSettings.cs" />
     <Compile Include="Objects\DeviceUnits.cs" />
     <Compile Include="Objects\Extensions\DeviceUnitExtensions.cs" />
     <Compile Include="Objects\Extensions\DeviceUnitAttribute.cs" />
     <Compile Include="Objects\MeasurementAddResult.cs" />
-    <Compile Include="Objects\MeasurementSession.cs" />
+    <Compile Include="MeasurementSeries\Series.cs" />
     <Compile Include="Objects\CommandTypes.cs" />
     <Compile Include="Objects\Extensions\MeasurementTypeExtensions.cs" />
     <Compile Include="Objects\ResultCodes.cs" />
@@ -148,6 +150,7 @@
       <Version>6.2.8</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

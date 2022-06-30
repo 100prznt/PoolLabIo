@@ -1,4 +1,5 @@
 ﻿using Rca.PoolLabIo.Helpers;
+using Rca.PoolLabIo.Objects;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Rca.PoolLabIo.Objects
+namespace Rca.PoolLabIo.MeasurementSeries
 {
-    public class MeasurementSession : Collection<Measurement>
+    public class Series : Collection<Measurement>
     {
 
         #region Members
@@ -17,6 +18,8 @@ namespace Rca.PoolLabIo.Objects
         #endregion Members
 
         #region Poperties
+        public SeriesSettings Settings { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
@@ -31,7 +34,7 @@ namespace Rca.PoolLabIo.Objects
 
         #region Constructor
 
-        public MeasurementSession()
+        public Series()
         {
             //m_InnerList = new List<Measurement>();
         }

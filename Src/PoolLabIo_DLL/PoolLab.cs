@@ -164,6 +164,8 @@ namespace Rca.PoolLabIo
             }
         }
 
+
+
         /// <summary>
         /// Get information about the connected PoolLab
         /// </summary>
@@ -177,7 +179,7 @@ namespace Rca.PoolLabIo
             //cts.Token.Register(() => tcsPoolLabInfo.TrySetCanceled(), useSynchronizationContext: false);
 
             CmdGetInfo();
-            
+
             return await tcsPoolLabInfo.Task;
         }
 
@@ -198,7 +200,33 @@ namespace Rca.PoolLabIo
             return await tcsPoolLabUnit.Task;
         }
 
-        public static async Task<IEnumerable<Measurement>>GetAllMeasurementsAsync()
+        /// <summary>
+        /// Set device unit
+        /// </summary>
+        /// <param name="unit">Unit to set</param>
+        public static async Task SetDeviceUnitAsync(DeviceUnits unit)
+        {
+            await RegisterNotification(ReadResult);
+
+            var buffer = new byte[COMMAND_LENGTH];
+
+            using (var ms = new MemoryStream(COMMAND_LENGTH))
+            {
+                using (var bw = new BinaryWriter(ms))
+                {
+                    bw.Write(PREAMBLE);
+                    bw.Write((byte)CommandTypes.PCMD_API_SET_PPM_MGL);
+                    bw.Seek(1, SeekOrigin.Current);
+                    bw.Write((byte)unit);
+                    ms.Position = 0;
+                    ms.Read(buffer, 0, COMMAND_LENGTH);
+                }
+            }
+
+            SendCommand(buffer);
+        }
+
+        public static async Task<IEnumerable<Measurement>> GetAllMeasurementsAsync()
         {
             var info = await GetInfoAsync();
 
@@ -210,7 +238,7 @@ namespace Rca.PoolLabIo
         /// </summary>
         /// <param name="count">Number of measurements to get</param>
         /// <returns>Measurement data</returns>
-        public static async Task<IEnumerable<Measurement>>GetMeasurementsAsync(int count)
+        public static async Task<IEnumerable<Measurement>> GetMeasurementsAsync(int count)
         {
             var measurements = new List<Measurement>();
 
@@ -231,41 +259,19 @@ namespace Rca.PoolLabIo
             return measurements;
         }
 
-        #region Commands
-        /// <summary>
-        /// Get information about the device
-        /// </summary>
-        static async Task CmdGetInfo()
-        {
-            await RegisterNotification(ReadPoolLabInformation);
-            
-            SendCommand(PREAMBLE, (byte)CommandTypes.PCMD_API_GET_INFO, 0x00);
-        }
-
-        /// <summary>
-        /// Read device unit configuration. A value of 0 indicates the device is in 'ppm' mode, a
-        /// value of 1 indicates the device is in 'mg/L' mode.
-        /// </summary>
-        static async Task CmdGetDeviceUnit()
-        {
-            await RegisterNotification(ReadDeviceUnit);
-
-            SendCommand(PREAMBLE, (byte)CommandTypes.PCMD_API_GET_PPM_MGL, 0x00);
-        }
-
         /// <summary>
         /// Set the PoolLab´s date/time to current system-time
         /// </summary>
-        public static async Task CmdSetTime()
+        public static async void SetTimeAsync()
         {
-            await CmdSetTime(DateTime.Now);
+            await SetTimeAsync(DateTime.Now);
         }
 
         /// <summary>
         /// Set the PoolLab´s date/time
         /// </summary>
         /// <param name="time">Settime</param>
-        public static async Task CmdSetTime(DateTime time)
+        public static async Task SetTimeAsync(DateTime time)
         {
             await RegisterNotification(ReadResult);
 
@@ -287,14 +293,32 @@ namespace Rca.PoolLabIo
             SendCommand(buffer);
         }
 
-        public static async Task CmdIncreaseContrast()
+
+        /// <summary>
+        /// Delete all saved measurements from the PoolLab
+        /// </summary>
+        public static async void DeleteMeasurementsAsync()
+        {
+            await RegisterNotification(ReadResult);
+
+            SendCommand(PREAMBLE, (byte)CommandTypes.PCMD_API_RESET_MEASURES);
+        }
+
+        /// <summary>
+        /// Increase the device display contrast
+        /// </summary>
+        public static async Task IncreaseContrastAsync()
         {
             await RegisterNotification(ReadResult);
 
             SendCommand(PREAMBLE, (byte)CommandTypes.PCMD_API_SET_CONTRAST_PLUS, 0x00);
         }
 
-        public static async Task CmdDecreaseContrast()
+        /// <summary>
+        /// Decrease the device display contrast
+        /// </summary>
+        /// <returns></returns>
+        public static async Task DecreaseContrastAsync()
         {
             await RegisterNotification(ReadResult);
 
@@ -304,47 +328,66 @@ namespace Rca.PoolLabIo
         /// <summary>
         /// Immediately restarts the PoolLab (BLE connection will fail)
         /// </summary>
-        public static void CmdRestart()
+        public static async Task RestartAsync()
         {
             SendCommand(PREAMBLE, (byte)CommandTypes.PCMD_API_RESET_DEVICE, 0x00);
         }
 
+
         /// <summary>
         /// Set the device into sleep-mode/standby
         /// </summary>
-        public static void CmdShutDown()
+        public static async Task ShutDownAsync()
         {
             SendCommand(PREAMBLE, (byte)CommandTypes.PCMD_API_SLEEP_DEVICE, 0x00);
         }
 
+
+
+        #endregion Services
+
+        #region Internal services
+
+        #region Commands
         /// <summary>
         /// Get measurements form PoolLab
         /// </summary>
         /// <param name="index">Startindex - first measurement ID</param>
-        public static async Task CmdGetMeasurements(int index = 0)
+        static async Task CmdGetMeasurements(int index = 0)
         {
             await RegisterNotification(ReadMeasurements);
 
             byte cell = (byte)(index / 16);
             byte selector = (byte)(index / 8 % 2);
-                       
+
             SendCommand(PREAMBLE, (byte)CommandTypes.PCMD_API_GET_MEASURES, 0x00, cell, 0x00, selector);
         }
 
         /// <summary>
-        /// Delete all saved measurements from the PoolLab
+        /// Get information about the device
         /// </summary>
-        public static async Task CmdResetMeasurements()
+        static async void CmdGetInfo()
         {
-            await RegisterNotification(ReadResult);
+            await RegisterNotification(ReadPoolLabInformation);
 
-            SendCommand(PREAMBLE, (byte)CommandTypes.PCMD_API_RESET_MEASURES);
+            SendCommand(PREAMBLE, (byte)CommandTypes.PCMD_API_GET_INFO, 0x00);
+        }
+
+        /// <summary>
+        /// Read device unit configuration. A value of 0 indicates the device is in 'ppm' mode, a
+        /// value of 1 indicates the device is in 'mg/L' mode.
+        /// </summary>
+        static async void CmdGetDeviceUnit()
+        {
+            await RegisterNotification(ReadDeviceUnit);
+
+            SendCommand(PREAMBLE, (byte)CommandTypes.PCMD_API_GET_PPM_MGL, 0x00);
         }
 
         #endregion Commands
 
         #region Write/Read
-        public static async Task SendCommand(params byte[] cmd)
+        static async Task SendCommand(params byte[] cmd)
         {
             if (cmd.Length > COMMAND_LENGTH)
                 throw new ArgumentOutOfRangeException("Invalide command length (" + cmd.Length + "), maximal allowed are " + COMMAND_LENGTH + " bytes.");
@@ -356,7 +399,7 @@ namespace Rca.PoolLabIo
             await SendRawCommand(cmdMosiCharacteristic, zeroPaddedcmd);
         }
 
-        public static async Task SendCommand(IBuffer buffer)
+        static async Task SendCommand(IBuffer buffer)
         {
             await RegisterNotification();
 
@@ -364,7 +407,7 @@ namespace Rca.PoolLabIo
             await SendCommand(cmd);
         }
 
-        public static async Task<byte[]> ReadCmdMiso()
+        static async Task<byte[]> ReadCmdMiso()
         {
             var result = await cmdMisoCharacteristic.ReadValueAsync(BluetoothCacheMode.Uncached);
             if (result.Status == GattCommunicationStatus.Success)
@@ -384,9 +427,6 @@ namespace Rca.PoolLabIo
 
         #endregion Write/Read
 
-        #endregion Services
-
-        #region Internal services
         private static async void ReadResult(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
             misoSigCharacteristic.ValueChanged -= ReadResult;
@@ -553,12 +593,9 @@ namespace Rca.PoolLabIo
                             misoSigCharacteristic.ValueChanged += MisoSig_ValueChangedAsync;
                         else
                             misoSigCharacteristic.ValueChanged += receiver;
-
                     }
                     else
-                    {
                         Debug.WriteLine("Error registering for notifications on MISO_Signal: " + notifyResult);
-                    }
                 }
                 else
                 {

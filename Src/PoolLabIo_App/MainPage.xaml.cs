@@ -101,22 +101,22 @@ namespace Rca.PoolLabIoApp
 
         private void Btn_SetTime_Click(object sender, RoutedEventArgs e)
         {
-            PoolLab.CmdSetTime();
+            PoolLab.SetTimeAsync();
         }
 
         private void Btn_Restart_Click(object sender, RoutedEventArgs e)
         {
-            PoolLab.CmdRestart();
+            PoolLab.RestartAsync();
         }
 
         private void Btn_ShutDown_Click(object sender, RoutedEventArgs e)
         {
-            PoolLab.CmdShutDown();
+            PoolLab.ShutDownAsync();
         }
 
         private async void Btn_GetMeas_Click(object sender, RoutedEventArgs e)
         {
-            var measurements = await PoolLab.GetMeasurementsAsync(5);
+            var measurements = await PoolLab.GetAllMeasurementsAsync();
 
             ViewModel.Measurements = measurements.ToList();
 
@@ -135,17 +135,17 @@ namespace Rca.PoolLabIoApp
 
         private void btn_ContrastMinus_Click_1(object sender, RoutedEventArgs e)
         {
-            PoolLab.CmdDecreaseContrast();
+            PoolLab.DecreaseContrastAsync();
         }
 
         private void btn_ContrastPlus_Click_1(object sender, RoutedEventArgs e)
         {
-            PoolLab.CmdIncreaseContrast();
+            PoolLab.IncreaseContrastAsync();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            PoolLab.CmdResetMeasurements();
+            PoolLab.DeleteMeasurementsAsync();
         }
 
         private async void btn_GetUnit_Click(object sender, RoutedEventArgs e)

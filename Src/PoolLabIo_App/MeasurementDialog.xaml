@@ -15,7 +15,7 @@
         <controls:DataGrid x:Name="dataGrid1" Height="630" Margin="12" AutoGenerateColumns="False" ItemsSource="{x:Bind local:ViewModel.Measurements}">
             <controls:DataGrid.Columns>
                 <controls:DataGridTextColumn Header="ID" Width="SizeToHeader" Binding="{Binding Id}" FontSize="20" />
-                <controls:DataGridTextColumn Header="Typ" Width="SizeToCells" Binding="{Binding DisplayName}" FontSize="20" />
+                <controls:DataGridTextColumn Header="Typ" Width="SizeToCells" Binding="{Binding ParameterName}" FontSize="20" />
                 <controls:DataGridTextColumn Header="Messwert" Width="SizeToCells" Binding="{Binding FormattedValue}"  FontSize="20" />
                 <controls:DataGridTextColumn Header="Status" Width="SizeToCells" Binding="{Binding Status}"  FontSize="20" />
                 <controls:DataGridTextColumn Header="Zeitstempel" Width="SizeToCells" Binding="{Binding Timestamp}"  FontSize="20" />
