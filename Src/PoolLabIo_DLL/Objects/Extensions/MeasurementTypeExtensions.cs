@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Rca.PoolLabIo.Objects.Extensions
 {
-    public static class MeasurementTypeExtension
+    public static class MeasurementTypeExtensions
     {
-        public static string GetUnit(this MeasurementTypes measType)
+        public static bool HasUnit(this MeasurementTypes measType)
         {
             Attribute[] attributes = measType.GetAttributes();
 
@@ -25,9 +25,9 @@ namespace Rca.PoolLabIo.Objects.Extensions
             }
 
             if (attr == null)
-                return null;
+                return false;
             else
-                return attr.Unit;
+                return attr.HasUnit;
 
         }
 
@@ -49,7 +49,7 @@ namespace Rca.PoolLabIo.Objects.Extensions
             if (attr == null)
                 return measType.ToString();
             else
-                return attr.DisplayName;
+                return attr.ParameterName;
         }
 
         public static string GetElement(this MeasurementTypes measType)

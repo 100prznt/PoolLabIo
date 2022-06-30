@@ -125,9 +125,11 @@ namespace Rca.PoolLabIoApp
             dlg.ShowAsync();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            PoolLab.CmdGetInfo();
+            var result = await PoolLab.GetInfoAsync();
+
+            //PoolLab.CmdGetInfo();
         }
 
 
@@ -144,6 +146,11 @@ namespace Rca.PoolLabIoApp
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             PoolLab.CmdResetMeasurements();
+        }
+
+        private async void btn_GetUnit_Click(object sender, RoutedEventArgs e)
+        {
+            var unit = await PoolLab.GetDeviceUnitAsync();
         }
     }
 }

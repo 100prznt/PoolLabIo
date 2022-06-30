@@ -19,6 +19,8 @@
                 <controls:DataGridTextColumn Header="Messwert" Width="SizeToCells" Binding="{Binding FormattedValue}"  FontSize="20" />
                 <controls:DataGridTextColumn Header="Status" Width="SizeToCells" Binding="{Binding Status}"  FontSize="20" />
                 <controls:DataGridTextColumn Header="Zeitstempel" Width="SizeToCells" Binding="{Binding Timestamp}"  FontSize="20" />
+                <controls:DataGridTextColumn Header="Formatiert" Width="SizeToCells" Binding="{Binding FormattedValue}"  FontSize="20" />
+                <controls:DataGridTextColumn Header="Reservierter Bereich" Width="SizeToCells" Binding="{Binding ReservedBytes}"  FontSize="20" />
             </controls:DataGrid.Columns>
         </controls:DataGrid>
     </Grid>

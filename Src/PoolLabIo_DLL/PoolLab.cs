@@ -32,7 +32,7 @@ namespace Rca.PoolLabIo
         /// <summary>
         /// Maximum allowed command length
         /// </summary>
-        public const int COMMAND_LENGTH = 128;
+        public const int COMMAND_LENGTH = 20; //3; //20 //128;
 
         /// <summary>
         /// BLE UUIDS of the PoolLab Bluetooth API
@@ -80,6 +80,7 @@ namespace Rca.PoolLabIo
         static BluetoothLEDevice deviceReference;
 
         static TaskCompletionSource<PoolLabInformation> tcsPoolLabInfo = null;
+        static TaskCompletionSource<DeviceUnits> tcsPoolLabUnit = null;
         static TaskCompletionSource<Measurement[]> tcsMeasurements = null;
 
         #endregion Fields
@@ -181,6 +182,30 @@ namespace Rca.PoolLabIo
         }
 
         /// <summary>
+        /// Get device unit from connected PoolLab
+        /// </summary>
+        /// <returns>PoolLab device unit</returns>
+        public static async Task<DeviceUnits> GetDeviceUnitAsync()
+        {
+            tcsPoolLabUnit = new TaskCompletionSource<DeviceUnits>();
+
+            //Bsp: https://stackoverflow.com/questions/18760252/timeout-an-async-method-implemented-with-taskcompletionsource
+            //var cts = new CancellationTokenSource(Timeout);
+            //cts.Token.Register(() => tcsPoolLabInfo.TrySetCanceled(), useSynchronizationContext: false);
+
+            CmdGetDeviceUnit();
+
+            return await tcsPoolLabUnit.Task;
+        }
+
+        public static async Task<IEnumerable<Measurement>>GetAllMeasurementsAsync()
+        {
+            var info = await GetInfoAsync();
+
+            return await GetMeasurementsAsync(info.ResultCount);
+        }
+
+        /// <summary>
         /// Get measurements form the connected PoolLab
         /// </summary>
         /// <param name="count">Number of measurements to get</param>
@@ -210,11 +235,22 @@ namespace Rca.PoolLabIo
         /// <summary>
         /// Get information about the device
         /// </summary>
-        public static async Task CmdGetInfo()
+        static async Task CmdGetInfo()
         {
             await RegisterNotification(ReadPoolLabInformation);
             
             SendCommand(PREAMBLE, (byte)CommandTypes.PCMD_API_GET_INFO, 0x00);
+        }
+
+        /// <summary>
+        /// Read device unit configuration. A value of 0 indicates the device is in 'ppm' mode, a
+        /// value of 1 indicates the device is in 'mg/L' mode.
+        /// </summary>
+        static async Task CmdGetDeviceUnit()
+        {
+            await RegisterNotification(ReadDeviceUnit);
+
+            SendCommand(PREAMBLE, (byte)CommandTypes.PCMD_API_GET_PPM_MGL, 0x00);
         }
 
         /// <summary>
@@ -233,9 +269,9 @@ namespace Rca.PoolLabIo
         {
             await RegisterNotification(ReadResult);
 
-            var buffer = new byte[128];
+            var buffer = new byte[COMMAND_LENGTH];
 
-            using (var ms = new MemoryStream(128))
+            using (var ms = new MemoryStream(COMMAND_LENGTH))
             {
                 using (var bw = new BinaryWriter(ms))
                 {
@@ -244,7 +280,7 @@ namespace Rca.PoolLabIo
                     bw.Seek(1, SeekOrigin.Current);
                     bw.Write(BitConverter.GetBytes(time.ToUnixTime()));
                     ms.Position = 0;
-                    ms.Read(buffer, 0, 128);
+                    ms.Read(buffer, 0, COMMAND_LENGTH);
                 }
             }
 
@@ -387,6 +423,8 @@ namespace Rca.PoolLabIo
 
             var buffer = await ReadCmdMiso();
 
+            var unit = await GetDeviceUnitAsync();
+
             if (buffer != null && buffer.Length > 0)
             {
                 var measurements = new List<Measurement>();
@@ -403,7 +441,7 @@ namespace Rca.PoolLabIo
                         int d = (buffer.Length - 1) / 16;
                         for (int i = 0; i < (buffer.Length - 1) / 16; i++)
                         {
-                            var meas = Measurement.FromBuffer(reader.ReadBytes(16));
+                            var meas = Measurement.FromBuffer(reader.ReadBytes(16), unit);
                             if (meas.Type != 0)
                                 measurements.Add(meas);
                         }
@@ -428,7 +466,35 @@ namespace Rca.PoolLabIo
                 //TODO: Buffer plausibilisieren
                 var info = PoolLabInformation.FromBuffer(buffer, 1);
 
+                Debug.WriteLine("DeviceInfo");
+                Debug.WriteLine($"FW: {info.FwVersion}");
+                Debug.WriteLine($"Battery level: {info.BatteryLevel}");
+                Debug.WriteLine($"Result count: {info.ResultCount}");
+                Debug.WriteLine($"Active id: {info.ActiveId}");
+                Debug.WriteLine($"Device time: {info.DeviceTime}");
+
                 tcsPoolLabInfo?.TrySetResult(info);
+            }
+            else
+            {
+                //TODO: No data...
+            }
+        }
+
+        private static async void ReadDeviceUnit(GattCharacteristic sender, GattValueChangedEventArgs args)
+        {
+            misoSigCharacteristic.ValueChanged -= ReadDeviceUnit;
+
+            var buffer = await ReadCmdMiso();
+
+            if (buffer != null && buffer.Length > 0)
+            {
+                //TODO: Buffer plausibilisieren
+                var deviceUnit = DeviceUnits.PPM;
+                if (buffer[1] == 0x01)
+                    deviceUnit = DeviceUnits.MGL;
+
+                tcsPoolLabUnit?.TrySetResult(deviceUnit);
             }
             else
             {
@@ -457,7 +523,7 @@ namespace Rca.PoolLabIo
             
             Debug.WriteLine("Sending command: " + BitConverter.ToString(cmd));
 
-            var response = await characteristic.WriteValueAsync(cmd.AsBuffer(), GattWriteOption.WriteWithResponse);
+            var response = await characteristic.WriteValueAsync(cmd.AsBuffer(0, COMMAND_LENGTH, COMMAND_LENGTH), GattWriteOption.WriteWithResponse);
             Debug.WriteLine("WriteResult: " + response);
 
             //Alternative Abfrage mit WriteValueWithResultAsync()

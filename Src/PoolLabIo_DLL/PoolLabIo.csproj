@@ -118,15 +118,20 @@
   </PropertyGroup>
   <PropertyGroup>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BleAdapter.cs" />
     <Compile Include="Helpers\DateTimeExtensions.cs" />
     <Compile Include="Helpers\UnixTimeConverter.cs" />
+    <Compile Include="IsExternalInit.cs" />
+    <Compile Include="Objects\DeviceUnits.cs" />
+    <Compile Include="Objects\Extensions\DeviceUnitExtensions.cs" />
+    <Compile Include="Objects\Extensions\DeviceUnitAttribute.cs" />
     <Compile Include="Objects\MeasurementAddResult.cs" />
     <Compile Include="Objects\MeasurementSession.cs" />
     <Compile Include="Objects\CommandTypes.cs" />
-    <Compile Include="Objects\Extensions\MeasurementTypeExtension.cs" />
+    <Compile Include="Objects\Extensions\MeasurementTypeExtensions.cs" />
     <Compile Include="Objects\ResultCodes.cs" />
     <Compile Include="Objects\PoolLabInformation.cs" />
     <Compile Include="Objects\Measurement.cs" />

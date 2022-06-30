@@ -5,13 +5,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Height="310" Width="274">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Height="360" Width="274">
 
     <Grid HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch">
         <Button x:Name="btn_Start" Content="Verbinden" HorizontalAlignment="Left" Margin="20,17,0,0" VerticalAlignment="Top" Click="Btn_Start_Click" Width="233"/>
-        <Button x:Name="btn_Read" Content="Lesen" Margin="20,258,0,0" VerticalAlignment="Top" Click="Btn_Read_Click" Width="75"/>
-        <Button x:Name="btn_Send" Content="Senden" Margin="20,221,0,0" VerticalAlignment="Top" Width="75" Click="Btn_Send_Click"/>
-        <TextBox x:Name="txt_Cmd" HorizontalAlignment="Left" Margin="102,221,0,0" Text="AB 01" VerticalAlignment="Top" Width="151"/>
+        <Button x:Name="btn_Read" Content="Lesen" Margin="20,307,0,0" VerticalAlignment="Top" Click="Btn_Read_Click" Width="75"/>
+        <Button x:Name="btn_Send" Content="Senden" Margin="20,270,0,0" VerticalAlignment="Top" Width="75" Click="Btn_Send_Click"/>
+        <TextBox x:Name="txt_Cmd" HorizontalAlignment="Left" Margin="102,270,0,0" Text="AB 01" VerticalAlignment="Top" Width="151"/>
         <Button x:Name="btn_SetTime" Content="Zeit einstellen" HorizontalAlignment="Left" Margin="20,96,0,0" VerticalAlignment="Top" Click="Btn_SetTime_Click"/>
         <Button x:Name="btn_Restart" Content="Neustart" HorizontalAlignment="Left" Margin="20,133,0,0" VerticalAlignment="Top" Click="Btn_Restart_Click" Width="113"/>
         <Button x:Name="btn_ShutDown" Content="Ausschalten" HorizontalAlignment="Left" Margin="140,59,0,0" VerticalAlignment="Top" Click="Btn_ShutDown_Click" Width="113"/>
@@ -20,5 +20,6 @@
         <Button Content="Löschen" HorizontalAlignment="Left" Margin="140,133,0,0" VerticalAlignment="Top" Width="113" Click="Button_Click_1"/>
         <Button x:Name="btn_ContrastMinus" Content="-" Margin="20,170,0,0" VerticalAlignment="Top" Width="113" Click="btn_ContrastMinus_Click_1"/>
         <Button x:Name="btn_ContrastPlus" Content="+" Margin="140,170,0,0" VerticalAlignment="Top" Width="113" Click="btn_ContrastPlus_Click_1"/>
+        <Button x:Name="btn_GetUnit" Content="Einheit" Margin="20,207,0,0" VerticalAlignment="Top" Width="113" Click="btn_GetUnit_Click"/>
     </Grid>
 </Page>

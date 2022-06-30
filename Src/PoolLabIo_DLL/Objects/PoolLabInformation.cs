@@ -18,12 +18,12 @@ namespace Rca.PoolLabIo.Objects
         /// <summary>
         /// Firmware version code
         /// </summary>
-        public int FwVersion => m_RawFwVersion;
+        public int FwVersion => m_RawFwVersion; //return fw version as int
 
         /// <summary>
         /// Number of saved measurement results on the device
         /// </summary>
-        public int ResultCount => m_RawResultCount;
+        public int ResultCount => m_RawResultCount; //return result code as int
 
         /// <summary>
         /// Current date/time
@@ -38,7 +38,7 @@ namespace Rca.PoolLabIo.Objects
         /// <summary>
         /// Battery charge level in percent (0..100)
         /// </summary>
-        public int BatteryLevel => m_RawBatteryLevel;
+        public int BatteryLevel => m_RawBatteryLevel; //return battery level as int
         
 
         #endregion Properties
