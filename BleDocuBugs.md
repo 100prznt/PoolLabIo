@@ -2,6 +2,11 @@
 
 Version 2 from 02/03/2022
 
+## Commandlength
+Kommandos mit einer Länge von 128 bit können erfolgreich an das PoolLAB gesendet werden, allerdings ist keine Reaktion feststellbar und es wird auch keine Antwort gesendet.
+Kommandos mit einer Länge von 20 bit, werden entsprechend der Doku verarbeitet.
+Ob es sich hier allerdings um ein Windows Problem handelt, kann ich nicht eindeutig sagen.
+
 
 ## Page 8:
 Commandlist is incomplete.
